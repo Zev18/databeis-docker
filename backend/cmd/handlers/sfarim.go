@@ -35,17 +35,24 @@ func ListSfarim(c *fiber.Ctx) error {
 	if language != "" {
 		languages = strings.Split(language, delimiter)
 	} else {
-		languages = []string{"english", "aramaic", "hebrew", ""}
+		languages = []string{"english", "aramaic", "hebrew"}
+	}
+	var languagesQuery string
+	for i, lang := range languages {
+		if i != 0 {
+			languagesQuery += " OR "
+		}
+		languagesQuery += "languages ILIKE " + "'%" + strings.TrimSpace(lang) + "%'"
 	}
 
-	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languages)
+	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery)
 	sfarim := []models.Sefer{}
 	command := database.DB.Db
 	if queryStr == "" {
 		log.Println(languages)
-		command.Where("languages ILIKE ?", languages, languages).Find(&sfarim)
+		command.Where(languagesQuery).Find(&sfarim)
 	} else {
-		command.Where("language IN ? OR language2 IN ?", languages, languages).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
+		command.Where(languagesQuery).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
