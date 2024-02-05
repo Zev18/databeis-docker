@@ -3,7 +3,9 @@ package handlers
 import (
 	"api/cmd/database"
 	"api/cmd/models"
+	"api/cmd/pagination"
 	"log"
+	"strconv"
 	"strings"
 
 	"encoding/csv"
@@ -14,11 +16,42 @@ import (
 )
 
 func ListSfarim(c *fiber.Ctx) error {
+	pageStr, perPageStr, queryStr, language := c.Query("page", "1"), c.Query("perPage", "10"), c.Query("query", ""), c.Query("language", "english;aramaic;hebrew")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		log.Println(err)
+		page = 1
+	}
+	perPage, err := strconv.Atoi(perPageStr)
+	if err != nil {
+		log.Println(err)
+		perPage = 10
+	}
+
+	if queryStr != "" {
+		queryStr = "%" + strings.TrimSpace(queryStr) + "%"
+	}
+	var languages []string
+	if language != "" {
+		languages = strings.Split(language, delimiter)
+	} else {
+		languages = []string{"english", "aramaic", "hebrew", ""}
+	}
+
+	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languages)
 	sfarim := []models.Sefer{}
+	command := database.DB.Db
+	if queryStr == "" {
+		log.Println(languages)
+		command.Where("language IN ? OR language2 IN ?", languages, languages).Find(&sfarim)
+	} else {
+		command.Where("language IN ? OR language2 IN ?", languages, languages).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
+	}
 
-	database.DB.Db.Find(&sfarim)
-
-	return c.Status(fiber.StatusOK).JSON(sfarim)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data":       sfarim,
+		"pagination": paginationData,
+	})
 }
 
 func CreateSefer(c *fiber.Ctx) error {

@@ -27,6 +27,12 @@ func setupRoutes(app *fiber.App) {
 		router.Delete("", handlers.DeleteSefer)
 	})
 
+	app.Route("/users", func(router fiber.Router) {
+		router.Get("/make-admin", handlers.MakeAdmin)
+		router.Get("/remove-admin", handlers.RemoveAdmin)
+		router.Get("/:id", handlers.GetUser)
+	})
+
 	app.Get("/login", handlers.Login)
 	app.Get("/logout", handlers.Logout)
 	app.Get("/auth/callback", handlers.Callback)
