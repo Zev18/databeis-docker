@@ -37,7 +37,7 @@ func setupRoutes(app *fiber.App) {
 	app.Get("/logout", handlers.Logout)
 	app.Get("/auth/callback", handlers.Callback)
 
-	app.Get("/test", func(c *fiber.Ctx) error {
+	app.Get("/authenticate", func(c *fiber.Ctx) error {
 		user, err := handlers.Authorize(c)
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)

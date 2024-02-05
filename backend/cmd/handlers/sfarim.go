@@ -43,7 +43,7 @@ func ListSfarim(c *fiber.Ctx) error {
 	command := database.DB.Db
 	if queryStr == "" {
 		log.Println(languages)
-		command.Where("language IN ? OR language2 IN ?", languages, languages).Find(&sfarim)
+		command.Where("languages ILIKE ?", languages, languages).Find(&sfarim)
 	} else {
 		command.Where("language IN ? OR language2 IN ?", languages, languages).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
 	}
@@ -139,7 +139,7 @@ func PutSefer(c *fiber.Ctx) error {
 		"volume":           payload.Volume,
 		"publisher_type":   payload.PublisherType,
 		"author":           payload.Author,
-		"language":         payload.Language,
+		"languages":        strings.ToLower(*payload.Languages),
 		"photo":            payload.Photo,
 		"initial":          payload.Initial,
 		"description":      payload.Description,
@@ -208,6 +208,46 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 	}
 	reader := csv.NewReader(f)
 	records, err := reader.ReadAll()
+	if records[0][0] == "LibraryThing" {
+		records = records[1:]
+	}
+	var newSfarim []models.Sefer
+
+	for _, record := range records {
+		languages := strings.ToLower(record[13])
+		quantity, err := strconv.Atoi(record[14])
+		if err != nil {
+			quantity = 0
+		}
+		library := StrToBool(record[0])
+		confirmed := StrToBool(record[1])
+
+		newSfarim = append(newSfarim, models.Sefer{
+			Shelf:           &record[2],
+			ShelfSection:    &record[3],
+			Category:        &record[4],
+			Subcategory:     &record[5],
+			Subsubcategory:  &record[6],
+			Title:           record[7],
+			HebrewTitle:     &record[8],
+			MasechetSection: &record[9],
+			Volume:          &record[10],
+			PublisherType:   &record[11],
+			Author:          &record[12],
+			Languages:       &languages,
+			Quantity:        &quantity,
+			Photo:           &record[15],
+			Initial:         &record[16],
+			Description:     &record[17],
+			Crosslist:       &record[18],
+			Crosslist2:      &record[19],
+			Library:         &library,
+			Confirmed:       &confirmed,
+		})
+	}
+
+	log.Println(newSfarim[0])
+
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error reading file", "data": err})
 	}
@@ -215,4 +255,11 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 	log.Default().Println(records[0])
 
 	return c.Status(fiber.StatusOK).JSON(records)
+}
+
+func StrToBool(str string) bool {
+	if strings.ToLower(str) == "true" {
+		return true
+	}
+	return false
 }

@@ -17,8 +17,7 @@ type Sefer struct {
 	Volume          *string `json:"volume" gorm:"text;default:null"`
 	PublisherType   *string `json:"publisherType" gorm:"text;default:null"`
 	Author          *string `json:"author" gorm:"text;default:null"`
-	Language        *string `json:"language" gorm:"text;default:null"`
-	Language2       *string `json:"language2" gorm:"text;default:null"`
+	Languages       *string `json:"language" gorm:"text;default:null"`
 	Photo           *string `json:"photo" gorm:"text;default:null"`
 	Initial         *string `json:"initial" gorm:"text;default:null"`
 	Description     *string `json:"description" gorm:"text;default:null"`

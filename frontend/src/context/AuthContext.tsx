@@ -35,7 +35,7 @@ export default function AuthContext({
     const checkCookie = async () => {
       if (!user) {
         try {
-          const res = await fetch(apiUrl + "/api/test", {
+          const res = await fetch(apiUrl + "/api/authenticate", {
             credentials: "include",
           });
           if (!res.ok) {
