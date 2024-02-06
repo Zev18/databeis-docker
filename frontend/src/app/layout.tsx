@@ -1,10 +1,9 @@
-import AuthContext from "@/context/AuthContext";
-import { ThemeProvider } from "@/context/ThemeProvider";
+import Header from "@/components/header/Header";
+import Providers from "@/context/Providers";
 import { cn } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
-import Header from "./Header";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,19 +18,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <AuthContext>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <body
-            className={cn(
-              "min-h-screen font-sans antialiased",
-              GeistSans.variable,
-              GeistMono.variable
-            )}>
-            <Header />
-            <main className={GeistSans.variable}>{children}</main>
-          </body>
-        </ThemeProvider>
-      </AuthContext>
+      <body
+        className={cn(
+          "min-h-screen font-sans antialiased",
+          GeistSans.variable,
+          GeistMono.variable
+        )}>
+        <Providers>
+          <Header />
+          <main className={GeistSans.variable}>{children}</main>
+        </Providers>
+      </body>
     </html>
   );
 }

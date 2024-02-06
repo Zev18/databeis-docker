@@ -50,9 +50,9 @@ func ListSfarim(c *fiber.Ctx) error {
 	command := database.DB.Db
 	if queryStr == "" {
 		log.Println(languages)
-		command.Where(languagesQuery).Find(&sfarim)
+		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Find(&sfarim)
 	} else {
-		command.Where(languagesQuery).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
+		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -253,15 +253,13 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 		})
 	}
 
-	log.Println(newSfarim[0])
+	database.DB.Db.Create(&newSfarim)
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error reading file", "data": err})
 	}
 
-	log.Default().Println(records[0])
-
-	return c.Status(fiber.StatusOK).JSON(records)
+	return c.Status(fiber.StatusOK).JSON(newSfarim[0])
 }
 
 func StrToBool(str string) bool {
