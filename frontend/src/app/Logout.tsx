@@ -1,6 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/context/AuthContext";
+import { LogOut } from "lucide-react";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -14,5 +16,11 @@ export default function Logout() {
     setUserData(null);
     localStorage.removeItem("user");
   };
-  return !!userData && <button onClick={logout}>Logout</button>;
+  return (
+    !!userData && (
+      <Button onClick={logout}>
+        <LogOut className="mr-2" /> Logout
+      </Button>
+    )
+  );
 }

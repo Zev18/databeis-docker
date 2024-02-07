@@ -2,7 +2,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { menuPages } from "@/lib/data";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
-import { createElement, useEffect } from "react";
+import { ReactNode, createElement, useEffect, useState } from "react";
 import UserAvatar from "../UserAvatar";
 import { Button } from "../ui/button";
 import {
@@ -11,11 +11,18 @@ import {
   DrawerFooter,
   DrawerTrigger,
 } from "../ui/drawer";
+import Logout from "@/app/Logout";
 
 const iconSize = 20;
 
-export default function MobileMenu() {
-  const pages = menuPages;
+export default function MobileMenu({
+  children,
+  asChild,
+}: {
+  children: ReactNode;
+  asChild?: boolean;
+}) {
+  const [pages, setPages] = useState(menuPages);
   const { userData, ready } = useAuthContext();
 
   useEffect(() => {
@@ -24,19 +31,22 @@ export default function MobileMenu() {
       userData?.isAdmin &&
       !pages.some((page) => page.name === "Admin dashboard")
     ) {
-      pages.splice(1, 0, {
-        name: "Admin dashboard",
-        path: "/admin",
-        icon: LayoutDashboard,
-      });
+      const updatedPages = [
+        ...pages.slice(0, 1),
+        {
+          name: "Admin dashboard",
+          path: "/admin",
+          icon: LayoutDashboard,
+        },
+        ...pages.slice(1),
+      ];
+      setPages(updatedPages);
     }
-  }, [ready, userData?.isAdmin, pages]);
+  }, [ready, userData, pages]);
 
   return (
     <Drawer>
-      <DrawerTrigger>
-        <UserAvatar user={userData} />
-      </DrawerTrigger>
+      <DrawerTrigger asChild={asChild}>{children}</DrawerTrigger>
       <DrawerContent>
         <div className="flex flex-col p-8 pb-2 gap-6">
           {pages.map((page) => (
@@ -51,9 +61,7 @@ export default function MobileMenu() {
           ))}
         </div>
         <DrawerFooter>
-          <Button>
-            <LogOut size={iconSize} className="mr-2" /> Logout
-          </Button>
+          <Logout />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

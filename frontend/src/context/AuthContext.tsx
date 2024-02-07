@@ -31,7 +31,7 @@ export default function AuthContext({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<User | null>(null); // Initialize with null
+  const [user, setUser] = useState<User | null>(getUser()); // Initialize with null
   const [ready, setReady] = useState(false);
 
   // update after component mount
@@ -53,8 +53,8 @@ export default function AuthContext({
             isAdmin: data.isAdmin,
             avatarUrl: data.avatarUrl,
           };
-          setUser(data);
-          localStorage.setItem("user", JSON.stringify(data));
+          setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData));
         } catch (e) {
           setUser(null);
           localStorage.removeItem("user");
@@ -79,11 +79,22 @@ export default function AuthContext({
 
 export const useAuthContext = () => useContext(Context);
 
-const getUser = () => {
+const getUser = (): User | null => {
   if (isServer) return null;
   let user;
   try {
-    user = localStorage.getItem("user");
+    const data = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user") || "")
+      : null;
+    if (data) {
+      user = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        isAdmin: data.isAdmin,
+        avatarUrl: data.avatarUrl,
+      };
+    }
   } catch (e) {}
-  return user;
+  return user || null;
 };

@@ -6,7 +6,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { menuPages } from "@/lib/data";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
-import { createElement, useEffect } from "react";
+import { createElement, useEffect, useState } from "react";
 import UserAvatar from "../UserAvatar";
 import {
   DropdownMenu,
@@ -21,10 +21,20 @@ import MobileMenu from "./MobileMenu";
 
 const iconSize = 18;
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 export default function ProfileCard() {
-  const { userData, ready } = useAuthContext();
+  const { userData, setUserData, ready } = useAuthContext();
   const { isAboveSm } = useBreakpoint("sm");
-  const pages = menuPages;
+  const [pages, setPages] = useState(menuPages);
+
+  const logout = async () => {
+    await fetch(apiUrl + "/api/logout", {
+      credentials: "include",
+    });
+    setUserData(null);
+    localStorage.removeItem("user");
+  };
 
   useEffect(() => {
     if (
@@ -32,11 +42,16 @@ export default function ProfileCard() {
       userData?.isAdmin &&
       !pages.some((page) => page.name === "Admin dashboard")
     ) {
-      pages.splice(1, 0, {
-        name: "Admin dashboard",
-        path: "/admin",
-        icon: LayoutDashboard,
-      });
+      const updatedPages = [
+        ...pages.slice(0, 1),
+        {
+          name: "Admin dashboard",
+          path: "/admin",
+          icon: LayoutDashboard,
+        },
+        ...pages.slice(1),
+      ];
+      setPages(updatedPages);
     }
   }, [ready, userData?.isAdmin, pages]);
 
@@ -61,14 +76,18 @@ export default function ProfileCard() {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex items-center gap-2">
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={logout}>
               <LogOut size={iconSize} />
               <span>Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <MobileMenu />
+        <MobileMenu>
+          <UserAvatar user={userData} />
+        </MobileMenu>
       )
     ) : (
       <Login />

@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import "./globals.css";
+import MobileNav from "@/components/MobileNav";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,6 +26,7 @@ export default function RootLayout({
           GeistMono.variable
         )}>
         <Providers>
+          <MobileNav />
           <Header />
           <main className={GeistSans.variable}>{children}</main>
         </Providers>
