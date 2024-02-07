@@ -12,9 +12,9 @@ type PaginationData struct {
 	Offset      int
 }
 
-func Paginate(page int, perPage int, model interface{}, query string, languages string) PaginationData {
+func Paginate(page int, perPage int, model interface{}, query string, languages string, categories []string) PaginationData {
 	var totalRows int64
-	command := database.DB.Db.Model(model)
+	command := database.DB.Db.Model(model).Where("LOWER(category) IN (?) OR LOWER(subcategory) IN (?) OR LOWER(subsubcategory) IN (?)", categories, categories, categories)
 	if languages != "" {
 		command.Where(languages).Count(&totalRows)
 	}

@@ -16,7 +16,7 @@ import (
 )
 
 func ListSfarim(c *fiber.Ctx) error {
-	pageStr, perPageStr, queryStr, language := c.Query("page", "1"), c.Query("perPage", "10"), c.Query("query", ""), c.Query("language", "english;aramaic;hebrew")
+	pageStr, perPageStr, queryStr, language, categoriesStr := c.Query("page", "1"), c.Query("perPage", "10"), c.Query("query", ""), c.Query("language", "english;aramaic;hebrew"), strings.ToLower(c.Query("categories"))
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
 		log.Println(err)
@@ -27,6 +27,8 @@ func ListSfarim(c *fiber.Ctx) error {
 		log.Println(err)
 		perPage = 10
 	}
+
+	categories := strings.Split(categoriesStr, delimiter)
 
 	if queryStr != "" {
 		queryStr = "%" + strings.TrimSpace(queryStr) + "%"
@@ -45,9 +47,12 @@ func ListSfarim(c *fiber.Ctx) error {
 		languagesQuery += "languages ILIKE " + "'%" + strings.TrimSpace(lang) + "%'"
 	}
 
-	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery)
+	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categories)
 	sfarim := []models.Sefer{}
 	command := database.DB.Db
+	if len(categories) > 0 {
+		command = command.Where("LOWER(category) IN (?) OR LOWER(subcategory) IN (?) OR LOWER(subsubcategory) IN (?)", categories, categories, categories)
+	}
 	if queryStr == "" {
 		log.Println(languages)
 		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Find(&sfarim)
