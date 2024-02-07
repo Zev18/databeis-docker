@@ -28,7 +28,12 @@ func ListSfarim(c *fiber.Ctx) error {
 		perPage = 10
 	}
 
-	categories := strings.Split(categoriesStr, delimiter)
+	var categories []string
+	if categoriesStr != "" {
+		categories = strings.Split(categoriesStr, delimiter)
+	} else {
+		categories = []string{}
+	}
 
 	if queryStr != "" {
 		queryStr = "%" + strings.TrimSpace(queryStr) + "%"
