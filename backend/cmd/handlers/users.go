@@ -85,7 +85,7 @@ func MakeAdmin(c *fiber.Ctx) error {
 			"message": "unauthorized",
 		})
 	}
-	ids := strings.Split(c.Query("ids"), ";")
+	ids := strings.Split(c.Query("ids"), delimiter)
 
 	var users []models.User
 	database.DB.Db.Model(&users).Clauses(clause.Returning{}).Where("id IN ?", ids).Update("is_admin", true)
@@ -109,7 +109,7 @@ func RemoveAdmin(c *fiber.Ctx) error {
 			"message": "unauthorized",
 		})
 	}
-	ids := strings.Split(c.Query("ids"), ";")
+	ids := strings.Split(c.Query("ids"), delimiter)
 
 	var users []models.User
 	database.DB.Db.Model(&users).Clauses(clause.Returning{}).Where("id IN ?", ids).Update("is_admin", false)

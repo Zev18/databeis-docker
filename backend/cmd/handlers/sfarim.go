@@ -36,6 +36,8 @@ func ListSfarim(c *fiber.Ctx) error {
 		categories = []string{}
 	}
 
+	log.Println(delimiter)
+
 	if queryStr != "" {
 		queryStr = "%" + strings.TrimSpace(queryStr) + "%"
 	}
@@ -45,25 +47,27 @@ func ListSfarim(c *fiber.Ctx) error {
 	} else {
 		languages = []string{"english", "aramaic", "hebrew"}
 	}
-	var languagesQuery string
-	for i, lang := range languages {
-		if i != 0 {
-			languagesQuery += " OR "
-		}
-		languagesQuery += "languages ILIKE " + "'%" + strings.TrimSpace(lang) + "%'"
+	log.Println(language)
+	log.Println(languages)
+	var languagesQuery = "languages IS NULL"
+	for _, lang := range languages {
+		languagesQuery += " OR languages ILIKE " + "'%" + strings.TrimSpace(lang) + "%'"
 	}
 
-	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categories)
+	var categoryIds []uint
+	database.DB.Db.Model(&models.Category{}).Select("id").Where("LOWER(name) IN ?", categories).Find(&categoryIds)
+
+	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categoryIds)
 	sfarim := []models.Sefer{}
-	command := database.DB.Db
-	if len(categories) > 0 {
-		command = command.Where("LOWER(category) IN (?) OR LOWER(subcategory) IN (?) OR LOWER(subsubcategory) IN (?)", categories, categories, categories)
+	command := database.DB.Db.Preload("Category").Preload("Subcategory").Preload("Subsubcategory")
+	if len(categoryIds) > 0 {
+		command = command.Where("category_id IN (?) OR subcategory_id IN (?) OR subsubcategory_id IN (?)", categoryIds, categoryIds, categoryIds)
 	}
 	if queryStr == "" {
 		log.Println(languages)
 		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Find(&sfarim)
 	} else {
-		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
+		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Where("title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{

@@ -12,17 +12,17 @@ type PaginationData struct {
 	Offset      int
 }
 
-func Paginate(page int, perPage int, model interface{}, query string, languages string, categories []string) PaginationData {
+func Paginate(page int, perPage int, model interface{}, query string, languages string, categoryIds []uint) PaginationData {
 	var totalRows int64
 	command := database.DB.Db.Model(model)
-	if len(categories) > 0 {
-		command = command.Where("LOWER(category) IN (?) OR LOWER(subcategory) IN (?) OR LOWER(subsubcategory) IN (?)", categories, categories, categories)
+	if len(categoryIds) > 0 {
+		command = command.Where("category_id IN (?) OR subcategory_id IN (?) OR subsubcategory_id IN (?)", categoryIds, categoryIds, categoryIds)
 	}
 	if languages != "" {
 		command.Where(languages).Count(&totalRows)
 	}
 	if query != "" {
-		command.Order("created_at DESC").Where(languages).Where("category ILIKE ? OR subcategory ILIKE ? OR subsubcategory ILIKE ? OR title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", query, query, query, query, query, query, query, query, query, query, query).Count(&totalRows)
+		command.Order("created_at DESC").Where(languages).Where("title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", query, query, query, query, query, query, query, query).Count(&totalRows)
 	}
 	totalPages := math.Ceil(float64(totalRows) / float64(perPage))
 
