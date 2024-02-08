@@ -13,6 +13,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func ListSfarim(c *fiber.Ctx) error {
@@ -239,12 +240,27 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 		library := StrToBool(record[0])
 		confirmed := StrToBool(record[1])
 
-		newSfarim = append(newSfarim, models.Sefer{
+		categoryStr, subcategoryStr, subsubcategoryStr := strings.ToLower(strings.TrimSpace(record[4])), strings.ToLower(strings.TrimSpace(record[5])), strings.ToLower(strings.TrimSpace(record[6]))
+
+		log.Println(categoryStr, subcategoryStr, subsubcategoryStr)
+
+		var category, subcategory, subsubcategory models.Category
+		if categoryStr != "" {
+			database.DB.Db.Clauses(clause.Returning{}).FirstOrCreate(&category, &models.Category{Name: categoryStr, Type: "category"})
+		}
+		if subcategoryStr != "" {
+			database.DB.Db.Clauses(clause.Returning{}).FirstOrCreate(&subcategory, &models.Category{Name: subcategoryStr, Type: "subcategory", ParentID: &category.ID})
+		}
+		if subsubcategoryStr != "" {
+			database.DB.Db.FirstOrCreate(&subsubcategory, &models.Category{Name: subsubcategoryStr, Type: "subsubcategory", ParentID: &subcategory.ID})
+		}
+
+		log.Println(category)
+		log.Println(subcategory)
+
+		newSefer := models.Sefer{
 			Shelf:           &record[2],
 			ShelfSection:    &record[3],
-			Category:        &record[4],
-			Subcategory:     &record[5],
-			Subsubcategory:  &record[6],
 			Title:           record[7],
 			HebrewTitle:     &record[8],
 			MasechetSection: &record[9],
@@ -256,11 +272,21 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 			Photo:           &record[15],
 			Initial:         &record[16],
 			Description:     &record[17],
-			Crosslist:       &record[18],
-			Crosslist2:      &record[19],
 			Library:         &library,
 			Confirmed:       &confirmed,
-		})
+		}
+
+		if category.ID != 0 {
+			newSefer.CategoryID = &category.ID
+		}
+		if subcategory.ID != 0 {
+			newSefer.SubcategoryID = &subcategory.ID
+		}
+		if subsubcategory.ID != 0 {
+			newSefer.SubsubcategoryID = &subsubcategory.ID
+		}
+
+		newSfarim = append(newSfarim, newSefer)
 	}
 
 	database.DB.Db.Create(&newSfarim)

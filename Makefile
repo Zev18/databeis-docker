@@ -9,3 +9,6 @@ up:
 
 down:
 	docker compose down
+
+db:
+	docker exec -it db psql -U zev -W databeis
