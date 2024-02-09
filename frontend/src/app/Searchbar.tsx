@@ -1,8 +1,12 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
-import useUrlState from "@ahooksjs/use-url-state";
+import { useQueryState } from "nuqs";
 
 export default function Searchbar() {
-  const [queryState, setQueryState] = useUrlState({ query: "" });
+  const [query, setQuery] = useQueryState("query");
+  const [language, setLanguage] = useQueryState("language");
+  const [categories, setCategories] = useQueryState("categories");
 
   return (
     <div>

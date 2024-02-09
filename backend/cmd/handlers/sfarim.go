@@ -29,11 +29,17 @@ func ListSfarim(c *fiber.Ctx) error {
 		perPage = 10
 	}
 
-	var categories []string
+	var categoryIds []uint
 	if categoriesStr != "" {
-		categories = strings.Split(categoriesStr, delimiter)
+		categoryStrs := strings.Split(categoriesStr, delimiter)
+		for _, categoryStr := range categoryStrs {
+			categoryId, err := strconv.Atoi(categoryStr)
+			if err == nil {
+				categoryIds = append(categoryIds, uint(categoryId))
+			}
+		}
 	} else {
-		categories = []string{}
+		categoryIds = []uint{}
 	}
 
 	log.Println(delimiter)
@@ -53,9 +59,6 @@ func ListSfarim(c *fiber.Ctx) error {
 	for _, lang := range languages {
 		languagesQuery += " OR languages ILIKE " + "'%" + strings.TrimSpace(lang) + "%'"
 	}
-
-	var categoryIds []uint
-	database.DB.Db.Model(&models.Category{}).Select("id").Where("LOWER(name) IN ?", categories).Find(&categoryIds)
 
 	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categoryIds)
 	sfarim := []models.Sefer{}
@@ -150,27 +153,27 @@ func PutSefer(c *fiber.Ctx) error {
 	}
 
 	database.DB.Db.Model(&sefer).Updates(map[string]interface{}{
-		"shelf":            payload.Shelf,
-		"shelf_section":    payload.ShelfSection,
-		"category":         payload.Category,
-		"subcategory":      payload.Subcategory,
-		"subsubcategory":   payload.Subsubcategory,
-		"title":            payload.Title,
-		"hebrew_title":     payload.HebrewTitle,
-		"masechet_section": payload.MasechetSection,
-		"volume":           payload.Volume,
-		"publisher_type":   payload.PublisherType,
-		"author":           payload.Author,
-		"languages":        strings.ToLower(*payload.Languages),
-		"photo":            payload.Photo,
-		"initial":          payload.Initial,
-		"description":      payload.Description,
-		"crosslist":        payload.Crosslist,
-		"crosslist2":       payload.Crosslist2,
-		"library":          payload.Library,
-		"confirmed":        payload.Confirmed,
-		"quantity":         payload.Quantity,
-		"updated_at":       time.Now(),
+		"shelf":             payload.Shelf,
+		"shelf_section":     payload.ShelfSection,
+		"category_id":       payload.CategoryID,
+		"subcategory_id":    payload.SubcategoryID,
+		"subsubcategory_id": payload.SubsubcategoryID,
+		"title":             payload.Title,
+		"hebrew_title":      payload.HebrewTitle,
+		"masechet_section":  payload.MasechetSection,
+		"volume":            payload.Volume,
+		"publisher_type":    payload.PublisherType,
+		"author":            payload.Author,
+		"languages":         strings.ToLower(*payload.Languages),
+		"photo":             payload.Photo,
+		"initial":           payload.Initial,
+		"description":       payload.Description,
+		"crosslist":         payload.Crosslist,
+		"crosslist2":        payload.Crosslist2,
+		"library":           payload.Library,
+		"confirmed":         payload.Confirmed,
+		"quantity":          payload.Quantity,
+		"updated_at":        time.Now(),
 	})
 	return c.Status(fiber.StatusOK).JSON(sefer)
 }
@@ -246,8 +249,6 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 
 		categoryStr, subcategoryStr, subsubcategoryStr := strings.ToLower(strings.TrimSpace(record[4])), strings.ToLower(strings.TrimSpace(record[5])), strings.ToLower(strings.TrimSpace(record[6]))
 
-		log.Println(categoryStr, subcategoryStr, subsubcategoryStr)
-
 		var category, subcategory, subsubcategory models.Category
 		if categoryStr != "" {
 			database.DB.Db.Clauses(clause.Returning{}).FirstOrCreate(&category, &models.Category{Name: categoryStr, Type: "category"})
@@ -258,9 +259,6 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 		if subsubcategoryStr != "" {
 			database.DB.Db.FirstOrCreate(&subsubcategory, &models.Category{Name: subsubcategoryStr, Type: "subsubcategory", ParentID: &subcategory.ID})
 		}
-
-		log.Println(category)
-		log.Println(subcategory)
 
 		newSefer := models.Sefer{
 			Shelf:           &record[2],

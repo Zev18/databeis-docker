@@ -33,6 +33,12 @@ func setupRoutes(app *fiber.App) {
 		router.Get("/:id", handlers.GetUser)
 	})
 
+	app.Route("/categories", func(router fiber.Router) {
+		router.Get("", handlers.ListCategories)
+		router.Put("/:id", handlers.PutCategory)
+		router.Post("", handlers.CreateCategory)
+	})
+
 	app.Get("/login", handlers.Login)
 	app.Get("/logout", handlers.Logout)
 	app.Get("/auth/callback", handlers.Callback)

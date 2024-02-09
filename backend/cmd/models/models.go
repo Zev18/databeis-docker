@@ -26,16 +26,16 @@ type Sefer struct {
 	CategoryID       *uint     `json:"categoryId" gorm:"default:null"`
 	SubcategoryID    *uint     `json:"subcategoryId" gorm:"default:null"`
 	SubsubcategoryID *uint     `json:"subsubcategoryId" gorm:"default:null"`
-	Category         *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"newCategory"`
-	Subcategory      *Category `gorm:"foreignKey:SubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"newSubcategory"`
-	Subsubcategory   *Category `gorm:"foreignKey:SubsubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"newSubsubcategory"`
+	Category         *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"category"`
+	Subcategory      *Category `gorm:"foreignKey:SubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"subcategory"`
+	Subsubcategory   *Category `gorm:"foreignKey:SubsubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"subsubcategory"`
 }
 
 type Category struct {
 	gorm.Model
-	Name     string    `json:"name" gorm:"index:idx_name;text;default:null"`
+	Name     string    `json:"name" gorm:"primaryKey;text;default:null"`
 	Type     string    `json:"type" gorm:"primaryKey;text;default:null"`
-	ParentID *uint     `json:"parentId" gorm:"default:null"`
+	ParentID *uint     `json:"parentId" gorm:"primaryKey;default:null"`
 	Parent   *Category `gorm:"foreignKey:ParentID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"parent"`
 }
 
