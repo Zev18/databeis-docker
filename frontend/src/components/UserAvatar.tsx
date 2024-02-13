@@ -1,15 +1,17 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { User } from "@/lib/types";
+import Image from "next/image";
 
 export default function UserAvatar({ user }: { user: User | null }) {
-  console.log(user?.avatarUrl);
   return (
     <Avatar>
-      <AvatarImage src={user?.avatarUrl} referrerPolicy="no-referrer" />
-      <AvatarFallback>
-        {user?.name ? user?.name[0].toUpperCase() : ""}
-      </AvatarFallback>
+      <Image
+        alt={user?.name || ""}
+        src={user?.avatarUrl || ""}
+        referrerPolicy="no-referrer"
+        fill
+      />
     </Avatar>
   );
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/cmd/handlers"
+	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -45,6 +46,7 @@ func setupRoutes(app *fiber.App) {
 
 	app.Get("/authenticate", func(c *fiber.Ctx) error {
 		user, err := handlers.Authorize(c)
+		log.Println("authenticate called")
 		if err != nil {
 			c.Status(fiber.StatusUnauthorized)
 			return c.JSON(fiber.Map{
@@ -53,5 +55,9 @@ func setupRoutes(app *fiber.App) {
 		}
 
 		return c.JSON(user)
+	})
+
+	app.Get("/ping", func(c *fiber.Ctx) error {
+		return c.SendString("pong")
 	})
 }
