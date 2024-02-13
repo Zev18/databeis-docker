@@ -1,17 +1,15 @@
-import { useAuthContext } from "@/context/AuthContext";
+import Logout from "@/app/Logout";
 import { menuPages } from "@/lib/data";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { ReactNode, createElement, useEffect, useState } from "react";
-import UserAvatar from "../UserAvatar";
-import { Button } from "../ui/button";
 import {
   Drawer,
   DrawerContent,
   DrawerFooter,
   DrawerTrigger,
 } from "../ui/drawer";
-import Logout from "@/app/Logout";
 
 const iconSize = 20;
 
@@ -23,12 +21,12 @@ export default function MobileMenu({
   asChild?: boolean;
 }) {
   const [pages, setPages] = useState(menuPages);
-  const { userData, ready } = useAuthContext();
+  const { isLoggedIn, user } = useAuthStore.getState();
 
   useEffect(() => {
     if (
-      ready &&
-      userData?.isAdmin &&
+      isLoggedIn &&
+      user?.isAdmin &&
       !pages.some((page) => page.name === "Admin dashboard")
     ) {
       const updatedPages = [
@@ -42,7 +40,7 @@ export default function MobileMenu({
       ];
       setPages(updatedPages);
     }
-  }, [ready, userData, pages]);
+  }, [isLoggedIn, user, pages]);
 
   return (
     <Drawer>
