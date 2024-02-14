@@ -4,6 +4,7 @@ import { apiUrlClient } from "@/lib/consts";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import SeferCard from "./SeferCard";
 
 export default function Sfarim({
   initialSfarim,
@@ -59,12 +60,11 @@ export default function Sfarim({
           <b>Yay! You have seen it all</b>
         </p>
       }>
-      {sfarim.map((sefer: Record<string, any>) => (
-        <div key={sefer.ID} className="my-20">
-          <h1>{sefer.ID}</h1>
-          <p>{sefer.description}</p>
-        </div>
-      ))}
+      <div className="flex flex-col gap-4">
+        {sfarim.map((sefer: Record<string, any>) => (
+          <SeferCard key={sefer.ID} sefer={sefer} />
+        ))}
+      </div>
     </InfiniteScroll>
   );
 }
