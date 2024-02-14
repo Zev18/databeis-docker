@@ -17,7 +17,7 @@ import (
 )
 
 func ListSfarim(c *fiber.Ctx) error {
-	pageStr, perPageStr, queryStr, language, categoriesStr := c.Query("page", "1"), c.Query("perPage", "10"), c.Query("query", ""), c.Query("language", "english;aramaic;hebrew"), strings.ToLower(c.Query("categories"))
+	pageStr, perPageStr, queryStr, language, categoriesStr := c.Query("page", "1"), c.Query("perPage", "15"), c.Query("query", ""), c.Query("language", "english;aramaic;hebrew"), strings.ToLower(c.Query("categories"))
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
 		log.Println(err)
@@ -26,7 +26,7 @@ func ListSfarim(c *fiber.Ctx) error {
 	perPage, err := strconv.Atoi(perPageStr)
 	if err != nil {
 		log.Println(err)
-		perPage = 10
+		perPage = 15
 	}
 
 	var categoryIds []uint
