@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ReactNode, useState } from "react";
 import { ThemeProvider } from "./ThemeProvider";
+import { Provider } from "jotai";
 
 export default function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -21,10 +22,12 @@ export default function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {children}
-      </ThemeProvider>
+      <Provider>
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </Provider>
     </QueryClientProvider>
   );
 }

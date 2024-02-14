@@ -19,13 +19,16 @@ import {
 } from "../ui/dropdown-menu";
 import MobileMenu from "./MobileMenu";
 import { apiUrlClient } from "@/lib/consts";
+import { useAtom } from "jotai";
+import { navOpenAtom } from "@/store/atoms";
 
 const iconSize = 18;
 
 export default function ProfileCard() {
   const { isLoggedIn, user, logoutUser } = useAuthStore.getState();
-  const { isAboveSm } = useBreakpoint("sm");
   const [pages, setPages] = useState(menuPages);
+
+  const [navOpen, setNavOpen] = useAtom(navOpenAtom);
 
   const router = useRouter();
 
@@ -57,9 +60,9 @@ export default function ProfileCard() {
   }, [isLoggedIn, user?.isAdmin, pages]);
 
   return isLoggedIn ? (
-    isAboveSm ? (
+    <>
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger className="hidden sm:block">
           <UserAvatar user={user} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -84,11 +87,12 @@ export default function ProfileCard() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    ) : (
-      <MobileMenu>
-        <UserAvatar user={user} />
-      </MobileMenu>
-    )
+      <UserAvatar
+        user={user}
+        onClick={() => setNavOpen((prev) => !prev)}
+        className="sm:hidden"
+      />
+    </>
   ) : (
     <Login />
   );

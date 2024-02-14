@@ -2,6 +2,9 @@
 const nextConfig = {
   output: "standalone",
   transpilePackages: ["lucide-react"],
+  experimental: {
+    swcPlugins: [["@swc-jotai/react-refresh", {}]],
+  },
   images: {
     remotePatterns: [
       {

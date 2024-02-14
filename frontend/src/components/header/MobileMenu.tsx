@@ -1,3 +1,5 @@
+"use client";
+
 import Logout from "@/app/Logout";
 import { menuPages } from "@/lib/data";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -10,6 +12,8 @@ import {
   DrawerFooter,
   DrawerTrigger,
 } from "../ui/drawer";
+import { useAtom } from "jotai";
+import { navOpenAtom } from "@/store/atoms";
 
 const iconSize = 20;
 
@@ -42,8 +46,10 @@ export default function MobileMenu({
     }
   }, [isLoggedIn, user, pages]);
 
+  const [navOpen, setNavOpen] = useAtom(navOpenAtom);
+
   return (
-    <Drawer>
+    <Drawer open={navOpen} onOpenChange={setNavOpen}>
       <DrawerTrigger asChild={asChild}>{children}</DrawerTrigger>
       <DrawerContent>
         <div className="flex flex-col p-8 pb-2 gap-6">

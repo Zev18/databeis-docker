@@ -29,7 +29,6 @@ export default function Sfarim({
     if (categories) url.searchParams.set("categories", categories);
     if (page) url.searchParams.set("page", (Number(page) + 1).toString());
     try {
-      console.log(url);
       const res = await fetch(url, {
         headers: { "Content-Type": "application/json" },
       });

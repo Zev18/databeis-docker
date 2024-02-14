@@ -1,11 +1,18 @@
-import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { User } from "@/lib/types";
 import Image from "next/image";
+import { Avatar } from "./ui/avatar";
 
-export default function UserAvatar({ user }: { user: User | null }) {
+export default function UserAvatar({
+  user,
+  className,
+  onClick,
+}: {
+  user: User | null;
+  className?: string;
+  onClick?: () => void;
+}) {
   return (
-    <Avatar>
+    <Avatar className={className} onClick={onClick}>
       <Image
         alt={user?.name || ""}
         src={user?.avatarUrl || ""}
