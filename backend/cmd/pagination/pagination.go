@@ -6,10 +6,12 @@ import (
 )
 
 type PaginationData struct {
-	CurrentPage int
-	TotalPages  int
-	TotalRows   int
-	Offset      int
+	CurrentPage int `json:"currentPage"`
+	NextPage    int `json:"nextPage"`
+	PrevPage    int `json:"prevPage"`
+	TotalPages  int `json:"totalPages"`
+	TotalRows   int `json:"totalRows"`
+	Offset      int `json:"offset"`
 }
 
 func Paginate(page int, perPage int, model interface{}, query string, languages string, categoryIds []uint) PaginationData {
@@ -30,6 +32,8 @@ func Paginate(page int, perPage int, model interface{}, query string, languages 
 
 	return PaginationData{
 		CurrentPage: page,
+		NextPage:    min(int(totalPages), page+1),
+		PrevPage:    max(1, page-1),
 		TotalPages:  int(totalPages),
 		TotalRows:   int(totalRows),
 		Offset:      offset,

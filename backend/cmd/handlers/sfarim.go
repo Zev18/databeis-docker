@@ -68,9 +68,9 @@ func ListSfarim(c *fiber.Ctx) error {
 	}
 	if queryStr == "" {
 		log.Println(languages)
-		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Find(&sfarim)
+		command.Order("created_at DESC, id").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Find(&sfarim)
 	} else {
-		command.Order("created_at DESC").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Where("title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
+		command.Order("created_at DESC, id").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Where("title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{

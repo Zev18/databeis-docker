@@ -1,6 +1,6 @@
 "use client";
 
-import Login from "@/app/Login";
+import Login from "@/components/header/Login";
 import { useBreakpoint } from "@/app/hooks/useBreakpoint";
 import { menuPages } from "@/lib/data";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -18,14 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import MobileMenu from "./MobileMenu";
+import { apiUrlClient } from "@/lib/consts";
 
 const iconSize = 18;
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 export default function ProfileCard() {
   const { isLoggedIn, user, logoutUser } = useAuthStore.getState();
-  console.log("logged in: " + isLoggedIn);
   const { isAboveSm } = useBreakpoint("sm");
   const [pages, setPages] = useState(menuPages);
 
@@ -33,7 +31,7 @@ export default function ProfileCard() {
 
   const logout = async () => {
     logoutUser();
-    await fetch(apiUrl + "/api/logout", {
+    await fetch(apiUrlClient + "/api/logout", {
       credentials: "include",
     });
     router.refresh();
@@ -57,11 +55,6 @@ export default function ProfileCard() {
       setPages(updatedPages);
     }
   }, [isLoggedIn, user?.isAdmin, pages]);
-
-  useEffect(() => {
-    console.log(isLoggedIn);
-    console.log(user);
-  }, [isLoggedIn, user]);
 
   return isLoggedIn ? (
     isAboveSm ? (

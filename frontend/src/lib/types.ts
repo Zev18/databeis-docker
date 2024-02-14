@@ -1,5 +1,3 @@
-import dynamicIconImports from "lucide-react/dynamicIconImports";
-
 export type User = {
   id: number;
   name: string;
@@ -12,4 +10,12 @@ export type PageInfo = {
   name: string;
   path: string;
   icon: React.ReactNode;
+};
+
+export type SfarimQuery = {
+  query?: string;
+  categories?: string[];
+  languages?: string[];
+  page?: number;
+  perPage?: number;
 };

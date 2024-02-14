@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ReactNode, useState } from "react";
 import { ThemeProvider } from "./ThemeProvider";
-import AuthContext from "./AuthContext";
 
 export default function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
