@@ -17,7 +17,7 @@ export default function Providers({ children }: { children: ReactNode }) {
             staleTime: 60 * 1000,
           },
         },
-      })
+      }),
   );
 
   return (

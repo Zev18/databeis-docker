@@ -42,25 +42,27 @@ func ListSfarim(c *fiber.Ctx) error {
 		categoryIds = []uint{}
 	}
 
-	log.Println(delimiter)
+	var queryCategories []uint
 
 	if queryStr != "" {
 		queryStr = "%" + strings.TrimSpace(queryStr) + "%"
 	}
+	database.DB.Db.Model(&models.Category{}).Select("id").Where("name ILIKE ?", queryStr).Find(&queryCategories)
+
+	log.Println("Matching categories: ", queryCategories)
+
 	var languages []string
 	if language != "" {
 		languages = strings.Split(language, delimiter)
 	} else {
 		languages = []string{"english", "aramaic", "hebrew"}
 	}
-	log.Println(language)
-	log.Println(languages)
 	var languagesQuery = "languages IS NULL"
 	for _, lang := range languages {
 		languagesQuery += " OR languages ILIKE " + "'%" + strings.TrimSpace(lang) + "%'"
 	}
 
-	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categoryIds)
+	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categoryIds, queryCategories)
 	sfarim := []models.Sefer{}
 	command := database.DB.Db.Preload("Category").Preload("Subcategory").Preload("Subsubcategory")
 	if len(categoryIds) > 0 {
@@ -70,7 +72,7 @@ func ListSfarim(c *fiber.Ctx) error {
 		log.Println(languages)
 		command.Order("created_at DESC, id").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Find(&sfarim)
 	} else {
-		command.Order("created_at DESC, id").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Where("title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ?", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr).Find(&sfarim)
+		command.Order("created_at DESC, id").Limit(perPage).Offset(paginationData.Offset).Where(languagesQuery).Where("title ILIKE ? OR hebrew_title ILIKE ? OR masechet_section ILIKE ? OR publisher_type ILIKE ? OR author ILIKE ? OR description ILIKE ? OR crosslist ILIKE ? OR crosslist2 ILIKE ? OR category_id IN (?) OR subcategory_id IN (?) OR subsubcategory_id IN (?)", queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryStr, queryCategories, queryCategories, queryCategories).Find(&sfarim)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -301,8 +303,5 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 }
 
 func StrToBool(str string) bool {
-	if strings.ToLower(str) == "true" {
-		return true
-	}
-	return false
+	return strings.ToLower(str) == "true"
 }

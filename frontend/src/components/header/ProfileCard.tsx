@@ -71,7 +71,8 @@ export default function ProfileCard() {
             <DropdownMenuItem
               asChild
               key={page.name}
-              className="flex items-center gap-2 pr-4">
+              className="flex items-center gap-2 pr-4"
+            >
               <Link href={page.path}>
                 {createElement(page.icon, { size: iconSize })}
                 <span>{page.name}</span>
@@ -81,7 +82,8 @@ export default function ProfileCard() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="flex items-center gap-2"
-            onClick={logout}>
+            onClick={logout}
+          >
             <LogOut size={iconSize} />
             <span>Logout</span>
           </DropdownMenuItem>

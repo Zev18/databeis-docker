@@ -57,7 +57,8 @@ export default function MobileMenu({
             <div key={page.name}>
               <Link
                 href={page.path}
-                className="flex items-center gap-2 text-lg font-medium">
+                className="flex items-center gap-2 text-lg font-medium"
+              >
                 {createElement(page.icon, { size: iconSize })}
                 <span>{page.name}</span>
               </Link>

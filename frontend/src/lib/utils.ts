@@ -3,12 +3,18 @@ import { twMerge } from "tailwind-merge";
 import { SfarimQuery } from "./types";
 import { delimiter } from "./consts";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Formats the query parameters and returns a SfarimQuery object.
+ *
+ * @param {{ [key: string]: string | string[] | undefined; }} searchParams - The search parameters to be formatted.
+ * @return {SfarimQuery} The formatted SfarimQuery object.
+ */
 export const formatQueryParams = (searchParams: {
   [key: string]: string | string[] | undefined;
 }): SfarimQuery => {
@@ -26,6 +32,12 @@ export const formatQueryParams = (searchParams: {
   return q;
 };
 
+/**
+ * Trims all the string values in the given object, including nested objects.
+ *
+ * @param {Record<string, any>} obj - The object to trim
+ * @return {Record<string, any>} The object with trimmed string values
+ */
 export const trimStrings = (obj: Record<string, any>) => {
   for (let prop in obj) {
     if (typeof obj[prop] === "string") {

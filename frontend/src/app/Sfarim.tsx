@@ -2,7 +2,7 @@
 
 import { apiUrlClient } from "@/lib/consts";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import SeferCard from "./SeferCard";
 import { trimStrings } from "@/lib/utils";
@@ -13,15 +13,15 @@ export default function Sfarim({
   initialSfarim: Record<string, any>;
 }) {
   const [sfarim, setSfarim] = useState<Record<string, any>[]>(
-    initialSfarim.data
+    initialSfarim.data,
   );
   const [pagination, setPagination] = useState<Record<string, any>>(
-    initialSfarim.pagination
+    initialSfarim.pagination,
   );
 
-  const [query, setQuery] = useQueryState("query");
-  const [language, setLanguage] = useQueryState("language");
-  const [categories, setCategories] = useQueryState("categories");
+  const [query] = useQueryState("query");
+  const [language] = useQueryState("language");
+  const [categories] = useQueryState("categories");
   const [page, setPage] = useState(1);
 
   const fetchMoreSfarim = async () => {
@@ -29,7 +29,7 @@ export default function Sfarim({
     if (query) url.searchParams.set("query", query);
     if (language) url.searchParams.set("language", language);
     if (categories) url.searchParams.set("categories", categories);
-    if (page) url.searchParams.set("page", (Number(page) + 1).toString());
+    if (page) url.searchParams.set("page", pagination.nextPage.toString());
     try {
       const res = await fetch(url, {
         headers: { "Content-Type": "application/json" },
@@ -42,6 +42,27 @@ export default function Sfarim({
       console.log(e);
     }
   };
+
+  const refetchSfarim = useCallback(async () => {
+    const url = new URL(apiUrlClient + "/api/sfarim");
+    if (query) url.searchParams.set("query", query);
+    if (language) url.searchParams.set("language", language);
+    if (categories) url.searchParams.set("categories", categories);
+    try {
+      const res = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+      });
+      const newSfarim = trimStrings(await res.json());
+      setSfarim(newSfarim.data);
+      setPagination(newSfarim.pagination);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [query, language, categories]);
+
+  useEffect(() => {
+    refetchSfarim();
+  }, [query, categories, language, refetchSfarim]);
 
   useEffect(() => {
     console.log(pagination);
@@ -57,11 +78,19 @@ export default function Sfarim({
       hasMore={pagination.currentPage < pagination.totalPages}
       loader={<h4>Loading...</h4>}
       endMessage={
-        <p style={{ textAlign: "center" }}>
-          <b>Yay! You have seen it all</b>
-        </p>
-      }>
+        <div className="m-10 flex items-center justify-center">
+          <p className="text-foreground/40">
+            {sfarim.length > 0 ? "No more results" : "No results found"}
+          </p>
+        </div>
+      }
+    >
       <div className="flex flex-col gap-4">
+        {sfarim.length > 0 && (
+          <div>
+            <p>{pagination.totalRows} results found.</p>
+          </div>
+        )}
         {sfarim.map((sefer: Record<string, any>) => (
           <SeferCard key={sefer.ID} sefer={sefer} />
         ))}

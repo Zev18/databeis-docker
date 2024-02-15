@@ -56,8 +56,9 @@ export default async function RootLayout({
         className={cn(
           "min-h-screen font-sans antialiased",
           GeistSans.variable,
-          GeistMono.variable
-        )}>
+          GeistMono.variable,
+        )}
+      >
         <StoreInitializer data={userData} />
         <Providers>
           <MobileNav />

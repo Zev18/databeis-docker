@@ -10,9 +10,12 @@ export default function MobileNav() {
 
   return (
     isLoggedIn && (
-      <div className="fixed inset-0 w-full h-full p-4 flex justify-end items-end pointer-events-none sm:hidden">
+      <div className="pointer-events-none fixed inset-0 z-30 flex h-full w-full items-end justify-end p-4 sm:hidden">
         <MobileMenu asChild>
-          <Button variant="secondary" className="pointer-events-auto">
+          <Button
+            variant="secondary"
+            className="pointer-events-auto border shadow-lg"
+          >
             <Menu />
           </Button>
         </MobileMenu>

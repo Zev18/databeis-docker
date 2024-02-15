@@ -13,6 +13,7 @@ const fetchInitialSfarim = async (q: SfarimQuery) => {
     url.searchParams.set("language", q.languages.join(delimiter));
   if (q.page) url.searchParams.set("page", q.page.toString());
   if (q.perPage) url.searchParams.set("perPage", q.perPage.toString());
+  console.log(url.toString());
   const res = await fetch(url.toString(), {
     headers: { "Content-Type": "application/json" },
   });

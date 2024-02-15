@@ -20,8 +20,9 @@ export default function LanguageIcon({ languages }: { languages: string }) {
           <div
             className={cn(
               "p-1 px-2 text-sm rounded-lg flex items-center gap-1",
-              colors
-            )}>
+              colors,
+            )}
+          >
             <Languages size={16} />
             <span>{strings.icon}</span>
           </div>
