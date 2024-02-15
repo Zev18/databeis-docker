@@ -1,6 +1,6 @@
 import { apiUrlServer, delimiter } from "@/lib/consts";
 import { SfarimQuery } from "@/lib/types";
-import { formatQueryParams } from "@/lib/utils";
+import { formatQueryParams, trimStrings } from "@/lib/utils";
 import Searchbar from "./Searchbar";
 import Sfarim from "./Sfarim";
 
@@ -25,7 +25,9 @@ export default async function Home({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const q = formatQueryParams(searchParams);
-  const initialSfarim = await fetchInitialSfarim(q);
+  const initialSfarim = trimStrings(await fetchInitialSfarim(q));
+
+  console.log(initialSfarim);
 
   return (
     <div className="m-4 flex flex-col gap-4">

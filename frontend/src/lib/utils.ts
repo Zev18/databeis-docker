@@ -25,3 +25,14 @@ export const formatQueryParams = (searchParams: {
 
   return q;
 };
+
+export const trimStrings = (obj: Record<string, any>) => {
+  for (let prop in obj) {
+    if (typeof obj[prop] === "string") {
+      obj[prop] = obj[prop].trim();
+    } else if (typeof obj[prop] === "object") {
+      obj[prop] = trimStrings(obj[prop]); // Recursive call for nested objects
+    }
+  }
+  return obj;
+};

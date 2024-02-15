@@ -54,6 +54,18 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        english: {
+          DEFAULT: "hsl(var(--en-primary))",
+          secondary: "hsl(var(--en-secondary))",
+        },
+        hebrew: {
+          DEFAULT: "hsl(var(--he-primary))",
+          secondary: "hsl(var(--he-secondary))",
+        },
+        aramaic: {
+          DEFAULT: "hsl(var(--ar-primary))",
+          secondary: "hsl(var(--ar-secondary))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

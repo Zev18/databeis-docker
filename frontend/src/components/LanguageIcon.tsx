@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -13,20 +14,19 @@ export default function LanguageIcon({ languages }: { languages: string }) {
   const colors = getColor(languages);
   const strings = getString(languages);
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={200}>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger className="cursor-default self-start">
           <div
-            className="p-1 px-2 text-sm rounded-lg flex items-center gap-1"
-            style={{
-              backgroundColor: colors.secondary,
-              color: colors.primary,
-            }}>
+            className={cn(
+              "p-1 px-2 text-sm rounded-lg flex items-center gap-1",
+              colors
+            )}>
             <Languages size={16} />
             <span>{strings.icon}</span>
           </div>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent collisionPadding={4}>
           <p>{strings.sentence}</p>
         </TooltipContent>
       </Tooltip>
@@ -34,14 +34,11 @@ export default function LanguageIcon({ languages }: { languages: string }) {
   );
 }
 
-const getColor = (
-  languages: string
-): { primary: string; secondary: string } => {
-  if (languages.includes("english"))
-    return { primary: "#548cc4", secondary: "#c7e5f6" };
+const getColor = (languages: string): string => {
+  if (languages.includes("english")) return "bg-english-secondary text-english";
   else if (languages.includes("hebrew"))
-    return { primary: "#B58AF6", secondary: "#efd5ff" };
-  else return { primary: "#d1716a", secondary: "#F7C1BD" };
+    return "bg-hebrew-secondary text-hebrew";
+  else return "bg-aramaic-secondary text-aramaic";
 };
 
 const getString = (languages: string): { icon: string; sentence: string } => {

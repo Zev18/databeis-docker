@@ -32,6 +32,15 @@
   --input-focus: 240 5.9% 80%;
   --ring: 240 10% 3.9%;
 
+  --en-primary: 210 49% 55%;
+  --en-secondary: 202 72% 87%;
+
+  --he-primary: 264 86% 75%;
+  --he-secondary: 277 100% 92%;
+
+  --ar-primary: 4 53% 62%;
+  --ar-secondary: 4 78% 85%;
+
   --radius: 0.5rem;
 }
 
@@ -64,6 +73,15 @@
   --input: 240 3.7% 15.9%;
   --input-focus: 240 3.7% 20%;
   --ring: 240 4.9% 83.9%;
+
+  --en-primary: 222 47% 60%;
+  --en-secondary: 225 66% 17%;
+
+  --he-primary: 264 54% 62%;
+  --he-secondary: 268 63% 17%;
+
+  --ar-primary: 4 55% 60%;
+  --ar-secondary: 344 69% 18%;
 }
 
 @layer base {

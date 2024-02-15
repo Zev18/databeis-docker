@@ -5,6 +5,7 @@ import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import SeferCard from "./SeferCard";
+import { trimStrings } from "@/lib/utils";
 
 export default function Sfarim({
   initialSfarim,
@@ -33,7 +34,7 @@ export default function Sfarim({
       const res = await fetch(url, {
         headers: { "Content-Type": "application/json" },
       });
-      const newSfarim = await res.json();
+      const newSfarim = trimStrings(await res.json());
       setSfarim((prev) => [...prev, ...newSfarim.data]);
       setPagination(newSfarim.pagination);
       setPage(newSfarim.pagination.currentPage + 1);
