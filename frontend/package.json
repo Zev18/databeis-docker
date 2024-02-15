@@ -21,7 +21,6 @@
     "clsx": "^2.1.0",
     "geist": "^1.2.1",
     "jotai": "^2.6.4",
-    "lodash": "^4.17.21",
     "lucide-react": "^0.323.0",
     "next": "14.1.0",
     "next-themes": "^0.2.1",
@@ -32,7 +31,6 @@
     "react-responsive": "^9.0.2",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "use-debounced-effect": "^2.0.1",
     "vaul": "^0.9.0",
     "zustand": "^4.5.0"
   },
