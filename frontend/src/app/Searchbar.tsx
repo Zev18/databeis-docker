@@ -2,8 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { useQueryState } from "nuqs";
-import { useCallback, useEffect, useState } from "react";
-import { debounce, update } from "lodash";
+import { useState } from "react";
 
 export default function Searchbar() {
   const [query, setQuery] = useQueryState("query");

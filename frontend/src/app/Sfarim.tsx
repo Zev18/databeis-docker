@@ -2,10 +2,11 @@
 
 import { apiUrlClient } from "@/lib/consts";
 import { useQueryState } from "nuqs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import SeferCard from "./SeferCard";
 import { trimStrings } from "@/lib/utils";
+import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 export default function Sfarim({
   initialSfarim,
@@ -60,9 +61,13 @@ export default function Sfarim({
     }
   }, [query, language, categories]);
 
-  useEffect(() => {
-    refetchSfarim();
-  }, [query, categories, language, refetchSfarim]);
+  useDebouncedEffect(
+    () => {
+      refetchSfarim();
+    },
+    { timeout: 100 },
+    [refetchSfarim],
+  );
 
   useEffect(() => {
     console.log(pagination);
