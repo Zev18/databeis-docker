@@ -13,10 +13,11 @@ export default function SeferCard({ sefer }: { sefer: Record<string, any> }) {
           <span className="w-full inline break-words [&>*]:align-baseline">
             <Unverified confirmed={sefer.confirmed} />
             <h2 className="text-lg break-words inline pr-2">{sefer.title}</h2>
-            <p className="text-foreground/60 inline pr-2">
-              {sefer.volume
-                ? sefer.masechetSection + " Vol. " + sefer.volume
-                : sefer.masechetSection}
+            <p className="text-foreground/60 inline pr-2 break-words">
+              {sefer.masechetSection}{" "}
+              {sefer.volume && (
+                <span className=" text-nowrap">{"Vol. " + sefer.volume}</span>
+              )}
             </p>
           </span>
           <LanguageIcon languages={sefer.language} />

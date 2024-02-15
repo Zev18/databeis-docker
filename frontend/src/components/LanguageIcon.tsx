@@ -16,7 +16,7 @@ export default function LanguageIcon({ languages }: { languages: string }) {
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
-        <TooltipTrigger className="cursor-default self-start">
+        <TooltipTrigger className="cursor-default self-start min-w-min">
           <div
             className={cn(
               "p-1 px-2 text-sm rounded-lg flex items-center gap-1",
