@@ -1,6 +1,7 @@
 import { apiUrlServer, delimiter } from "@/lib/consts";
 import { SfarimQuery } from "@/lib/types";
 import { formatQueryParams, trimStrings } from "@/lib/utils";
+import Filters from "./Filters";
 import Searchbar from "./Searchbar";
 import Sfarim from "./Sfarim";
 
@@ -20,6 +21,15 @@ const fetchInitialSfarim = async (q: SfarimQuery) => {
   return res.json();
 };
 
+const fetchCategories = async () => {
+  const url = new URL(apiUrlServer + "/api/categories");
+  const res = await fetch(url.toString(), {
+    headers: { "Content-Type": "application/json" },
+  });
+  const data = await res.json();
+  return { data };
+};
+
 export default async function Home({
   searchParams,
 }: {
@@ -28,11 +38,15 @@ export default async function Home({
   const q = formatQueryParams(searchParams);
   const initialSfarim = trimStrings(await fetchInitialSfarim(q));
 
-  console.log(initialSfarim);
+  const categories = trimStrings(await fetchCategories());
+  console.log(categories.data);
 
   return (
     <div className="m-4 flex flex-col gap-4">
-      <Searchbar />
+      <div className="flex flex-col gap-2">
+        <Searchbar />
+        <Filters categories={categories.data} />
+      </div>
       <Sfarim initialSfarim={initialSfarim} />
     </div>
   );
