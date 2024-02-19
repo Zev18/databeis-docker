@@ -3,9 +3,16 @@
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { useQueryState } from "nuqs";
+import { useEffect } from "react";
 
 export default function Searchbar() {
   const [query, setQuery] = useQueryState("query");
+
+  useEffect(() => {
+    if (query == "") {
+      setQuery(null);
+    }
+  }, [query, setQuery]);
 
   return (
     <div className="relative inline-block">
@@ -21,7 +28,7 @@ export default function Searchbar() {
           title="clear search"
           className="absolute right-4 top-[50%] inline-flex -translate-y-[50%]"
           onClick={() => {
-            setQuery("");
+            setQuery(null);
           }}
         >
           <X size={18} />
