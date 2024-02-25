@@ -7,6 +7,16 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import SeferCard from "./SeferCard";
 import { trimStrings } from "@/lib/utils";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useAtom } from "jotai";
+import { openSeferAtom } from "@/store/atoms";
+import SfarimDetail from "./SfarimDetail";
 
 export default function Sfarim({
   initialSfarim,
@@ -19,6 +29,8 @@ export default function Sfarim({
   const [pagination, setPagination] = useState<Record<string, any>>(
     initialSfarim.pagination,
   );
+
+  const [openSefer, setOpenSefer] = useAtom(openSeferAtom);
 
   const [query] = useQueryState("query");
   const [language] = useQueryState("language");
@@ -69,37 +81,48 @@ export default function Sfarim({
     [refetchSfarim],
   );
 
-  useEffect(() => {
-    console.log(pagination);
-  }, [pagination]);
-  useEffect(() => {
-    console.log(sfarim);
-  }, [sfarim]);
-
   return (
-    <InfiniteScroll
-      dataLength={sfarim.length}
-      next={async () => await fetchMoreSfarim()}
-      hasMore={pagination.currentPage < pagination.totalPages}
-      loader={<h4>Loading...</h4>}
-      endMessage={
-        <div className="m-10 flex items-center justify-center">
-          <p className="text-foreground/40">
-            {sfarim.length > 0 ? "No more results" : "No results found"}
-          </p>
-        </div>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        {sfarim.length > 0 && (
-          <div>
-            <p>{pagination.totalRows} results found.</p>
+    <>
+      <InfiniteScroll
+        dataLength={sfarim.length}
+        next={async () => await fetchMoreSfarim()}
+        hasMore={pagination.currentPage < pagination.totalPages}
+        loader={<h4>Loading...</h4>}
+        endMessage={
+          <div className="m-10 flex items-center justify-center">
+            <p className="text-foreground/40">
+              {sfarim.length > 0 ? "No more results" : "No results found"}
+            </p>
           </div>
-        )}
-        {sfarim.map((sefer: Record<string, any>) => (
-          <SeferCard key={sefer.ID} sefer={sefer} />
-        ))}
-      </div>
-    </InfiniteScroll>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          {sfarim.length > 0 && (
+            <div>
+              <p>{pagination.totalRows} results found.</p>
+            </div>
+          )}
+          {sfarim.map((sefer: Record<string, any>) => (
+            <SeferCard key={sefer.ID} sefer={sefer} />
+          ))}
+        </div>
+      </InfiniteScroll>
+      <Dialog
+        open={openSefer != null}
+        onOpenChange={() =>
+          setOpenSefer((prev) => (prev == null ? openSefer : null))
+        }
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{openSefer?.title}</DialogTitle>
+            {openSefer?.description && (
+              <DialogDescription>{openSefer?.description}</DialogDescription>
+            )}
+          </DialogHeader>
+          <SfarimDetail sefer={openSefer} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

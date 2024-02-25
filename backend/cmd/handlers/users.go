@@ -5,7 +5,6 @@ import (
 	"api/cmd/models"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -57,16 +56,10 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "fail", "message": err.Error()})
 	}
 
-	database.DB.Db.Model(&user).Updates(map[string]interface{}{
-		"email":        payload.Email,
-		"name":         payload.Name,
-		"first_name":   payload.FirstName,
-		"last_name":    payload.LastName,
-		"nick_name":    payload.NickName,
-		"display_name": payload.DisplayName,
-		"avatar_url":   payload.AvatarURL,
-		"is_admin":     payload.IsAdmin,
-		"updated_at":   time.Now(),
+	database.DB.Db.Model(&user).Updates(models.User{
+		Name:      payload.Name,
+		AvatarURL: payload.AvatarURL,
+		IsAdmin:   payload.IsAdmin,
 	})
 	return c.Status(fiber.StatusOK).JSON(user)
 }

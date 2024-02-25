@@ -1,14 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Languages } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { Languages } from "lucide-react";
-import React, { useEffect } from "react";
 
 export default function LanguageIcon({ languages }: { languages: string }) {
   const colors = getColor(languages);
@@ -16,10 +15,10 @@ export default function LanguageIcon({ languages }: { languages: string }) {
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
-        <TooltipTrigger className="cursor-default self-start min-w-min">
+        <TooltipTrigger className="min-w-min cursor-default self-start">
           <div
             className={cn(
-              "p-1 px-2 text-sm rounded-lg flex items-center gap-1",
+              "flex items-center gap-1 rounded-lg p-1 px-2 text-sm",
               colors,
             )}
           >

@@ -48,3 +48,18 @@ export const trimStrings = (obj: Record<string, any>) => {
   }
   return obj;
 };
+
+/**
+ * Check if the given id exists in the list of users who have bookmarked a book
+ *
+ * @param {Record<string, any>[]} users - The list of users
+ * @param {number} id - The id to check for existence in the list of users
+ * @return {boolean} Whether the id exists in the list of users
+ */
+export const isBookmarked = (
+  users: Record<string, any>[],
+  id: number | undefined,
+) => {
+  if (!users || !id) return false;
+  return users.some((user) => user.ID == id);
+};

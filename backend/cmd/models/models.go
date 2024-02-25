@@ -29,6 +29,7 @@ type Sefer struct {
 	Category         *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"category"`
 	Subcategory      *Category `gorm:"foreignKey:SubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"subcategory"`
 	Subsubcategory   *Category `gorm:"foreignKey:SubsubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"subsubcategory"`
+	Users            []*User   `json:"users" gorm:"many2many:user_sfarim;"`
 }
 
 type Category struct {
@@ -41,12 +42,13 @@ type Category struct {
 
 type User struct {
 	gorm.Model
-	Email       string `json:"email" gorm:"text;uniqueIndex;default:null"`
-	Name        string `json:"name" gorm:"text;default:null"`
-	FirstName   string `json:"firstName" gorm:"text;default:null"`
-	LastName    string `json:"lastName" gorm:"text;default:null"`
-	NickName    string `json:"nickName" gorm:"text;default:null"`
-	DisplayName string `json:"displayName" gorm:"text;default:null"`
-	AvatarURL   string `json:"avatarUrl" gorm:"text;default:null"`
-	IsAdmin     bool   `json:"isAdmin" gorm:"default:false"`
+	Email       string   `json:"email" gorm:"text;uniqueIndex;default:null"`
+	Name        string   `json:"name" gorm:"text;default:null"`
+	FirstName   string   `json:"firstName" gorm:"text;default:null"`
+	LastName    string   `json:"lastName" gorm:"text;default:null"`
+	NickName    string   `json:"nickName" gorm:"text;default:null"`
+	DisplayName string   `json:"displayName" gorm:"text;default:null"`
+	AvatarURL   string   `json:"avatarUrl" gorm:"text;default:null"`
+	IsAdmin     bool     `json:"isAdmin" gorm:"default:false"`
+	Sfarim      []*Sefer `json:"sfarim" gorm:"many2many:user_sfarim;"`
 }

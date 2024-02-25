@@ -64,7 +64,7 @@ func ListSfarim(c *fiber.Ctx) error {
 
 	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categoryIds, queryCategories)
 	sfarim := []models.Sefer{}
-	command := database.DB.Db.Preload("Category").Preload("Subcategory").Preload("Subsubcategory")
+	command := database.DB.Db.Preload("Category").Preload("Subcategory").Preload("Subsubcategory").Preload("Users")
 	if len(categoryIds) > 0 {
 		command = command.Where("category_id IN (?) OR subcategory_id IN (?) OR subsubcategory_id IN (?)", categoryIds, categoryIds, categoryIds)
 	}
@@ -113,7 +113,7 @@ func GetSefer(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var sefer models.Sefer
 
-	result := database.DB.Db.First(&sefer, id)
+	result := database.DB.Db.Preload("Users").First(&sefer, id)
 	if err := result.Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "No sefer with that Id exists"})
@@ -300,6 +300,35 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(newSfarim[0])
+}
+
+func BookmarkSefer(c *fiber.Ctx) error {
+	// or unbookmarks sefer if already bookmarked
+	user, err := Authorize(c)
+	if err != nil {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+
+	seferId := c.Params("id")
+	var msg string
+
+	notBookmarked := database.DB.Db.Model(&user).Where("id = ?", seferId).Association("Sfarim").Count() == 0
+	if notBookmarked {
+		var seferForReal = models.Sefer{}
+		database.DB.Db.First(&seferForReal, seferId)
+		database.DB.Db.Model(&user).Association("Sfarim").Append(&seferForReal)
+		msg = "Added sefer of id " + seferId + " to bookmarks"
+	} else {
+		var seferForReal = models.Sefer{}
+		database.DB.Db.First(&seferForReal, seferId)
+		database.DB.Db.Model(&user).Association("Sfarim").Delete(&seferForReal)
+		msg = "Removed sefer of id " + seferId + " from bookmarks"
+	}
+
+	return c.Status(fiber.StatusOK).SendString(msg)
 }
 
 func StrToBool(str string) bool {

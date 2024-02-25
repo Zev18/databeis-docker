@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
 import { apiUrlServer } from "@/lib/consts";
+import { User } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,7 +23,14 @@ const fetchUserData = async () => {
     headers: headers(), // pass headers from client to backend
   });
   const data = await res.json();
-  return data;
+  const user: User = {
+    id: data.ID,
+    name: data.displayName,
+    email: data.email,
+    isAdmin: data.isAdmin,
+    avatarUrl: data.avatarUrl,
+  };
+  return user;
 };
 
 export default async function RootLayout({
@@ -39,13 +47,7 @@ export default async function RootLayout({
     });
   } else {
     useAuthStore.setState({
-      user: {
-        id: userData.id,
-        name: userData.displayName,
-        email: userData.email,
-        isAdmin: userData.isAdmin,
-        avatarUrl: userData.avatarUrl,
-      },
+      user: userData,
       isLoggedIn: true,
     });
   }

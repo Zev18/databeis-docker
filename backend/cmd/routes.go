@@ -28,6 +28,10 @@ func setupRoutes(app *fiber.App) {
 		router.Delete("", handlers.DeleteSefer)
 	})
 
+	app.Route("/sfarim/bookmark/:id", func(router fiber.Router) {
+		router.Post("", handlers.BookmarkSefer)
+	})
+
 	app.Route("/users", func(router fiber.Router) {
 		router.Get("/make-admin", handlers.MakeAdmin)
 		router.Get("/remove-admin", handlers.RemoveAdmin)

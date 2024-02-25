@@ -1,9 +1,11 @@
 "use client";
 
 import Login from "@/components/header/Login";
-import { useBreakpoint } from "@/app/hooks/useBreakpoint";
+import { apiUrlClient } from "@/lib/consts";
 import { menuPages } from "@/lib/data";
+import { navOpenAtom } from "@/store/atoms";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useAtom } from "jotai";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,10 +19,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import MobileMenu from "./MobileMenu";
-import { apiUrlClient } from "@/lib/consts";
-import { useAtom } from "jotai";
-import { navOpenAtom } from "@/store/atoms";
 
 const iconSize = 18;
 
@@ -28,7 +26,7 @@ export default function ProfileCard() {
   const { isLoggedIn, user, logoutUser } = useAuthStore.getState();
   const [pages, setPages] = useState(menuPages);
 
-  const [navOpen, setNavOpen] = useAtom(navOpenAtom);
+  const [, setNavOpen] = useAtom(navOpenAtom);
 
   const router = useRouter();
 
