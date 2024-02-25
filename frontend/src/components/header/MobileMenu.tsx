@@ -52,12 +52,13 @@ export default function MobileMenu({
     <Drawer open={navOpen} onOpenChange={setNavOpen}>
       <DrawerTrigger asChild={asChild}>{children}</DrawerTrigger>
       <DrawerContent>
-        <div className="flex flex-col p-8 pb-2 gap-6">
+        <div className="flex flex-col gap-6 p-8 pb-2">
           {pages.map((page) => (
             <div key={page.name}>
               <Link
                 href={page.path}
                 className="flex items-center gap-2 text-lg font-medium"
+                onClick={() => setNavOpen(false)}
               >
                 {createElement(page.icon, { size: iconSize })}
                 <span>{page.name}</span>

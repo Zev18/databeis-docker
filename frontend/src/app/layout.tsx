@@ -25,10 +25,10 @@ const fetchUserData = async () => {
   const data = await res.json();
   const user: User = {
     id: data.ID,
-    name: data.displayName,
+    name: data.displayName || data.name,
     email: data.email,
     isAdmin: data.isAdmin,
-    avatarUrl: data.avatarUrl,
+    avatarUrl: data.customAvatarUrl || data.avatarUrl,
   };
   return user;
 };

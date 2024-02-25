@@ -14,7 +14,6 @@ const fetchInitialSfarim = async (q: SfarimQuery) => {
     url.searchParams.set("language", q.languages.join(delimiter));
   if (q.page) url.searchParams.set("page", q.page.toString());
   if (q.perPage) url.searchParams.set("perPage", q.perPage.toString());
-  console.log(url.toString());
   const res = await fetch(url.toString(), {
     headers: { "Content-Type": "application/json" },
   });
@@ -42,8 +41,8 @@ export default async function Home({
   console.log(categories.data);
 
   return (
-    <div className="m-4 flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
+    <div className="flex w-full flex-col items-center gap-4 p-4">
+      <div className="flex w-full max-w-3xl flex-col gap-2">
         <Searchbar />
         <Filters categories={categories.data} />
       </div>
