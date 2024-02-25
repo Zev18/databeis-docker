@@ -30,19 +30,13 @@ export default function SeferCard({ sefer }: { sefer: Record<string, any> }) {
     isLoggedIn ? isBookmarked(sefer.users, Number(user?.id)) : false,
   );
 
-  useEffect(() => {
-    console.log(bookmarked);
-  }, [bookmarked]);
-
   const toggleBookmark = () => {
     if (!isLoggedIn) return;
     const prevStatus = bookmarked;
     setBookmarked((prev) => !prev);
     if (!prevStatus) {
-      console.log("bookmarking");
       sefer.users.push(Number(user?.id));
     } else {
-      console.log("unbookmarking");
       sefer.users = sefer.users.filter((id: number) => id != user?.id);
     }
     fetch(apiUrlClient + "/api/sfarim/bookmark/" + sefer.ID, {
