@@ -1,5 +1,6 @@
 import LanguageIcon from "@/components/LanguageIcon";
 import Unverified from "@/components/Unverified";
+import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { apiUrlClient } from "@/lib/consts";
@@ -16,9 +17,9 @@ import {
   LibraryBig,
   User,
 } from "lucide-react";
-import { revalidatePath } from "next/cache";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { revalidate } from "./actions";
+import AvatarGroup from "@/components/AvatarGroup";
 
 const iconSize = 18;
 
@@ -27,8 +28,10 @@ export default function SeferCard({ sefer }: { sefer: Record<string, any> }) {
   const [, setOpenSefer] = useAtom(openSeferAtom);
 
   const [bookmarked, setBookmarked] = useState(
-    isLoggedIn ? isBookmarked(sefer.users, Number(user?.id)) : false,
+    isLoggedIn ? isBookmarked(sefer.users, user?.id) : false,
   );
+
+  const otherUsers = getOtherUsers(sefer.users, user?.id);
 
   const toggleBookmark = () => {
     if (!isLoggedIn) return;
@@ -129,17 +132,26 @@ export default function SeferCard({ sefer }: { sefer: Record<string, any> }) {
         </div>
       </Card>
       {isLoggedIn && (
-        <div className="z-10 mx-2 max-w-min self-end rounded-b-xl bg-secondary p-1 px-2 shadow">
-          <Button variant="ghost" size="sm" onClick={toggleBookmark}>
-            <Bookmark
-              size={iconSize - 2}
-              fill={bookmarked ? "currentColor" : "none"}
-              className="mr-2"
-            />
-            <p className="">{bookmarked ? "Unbookmark" : "Bookmark"}</p>
-          </Button>
+        <div className="flex w-full items-center justify-end">
+          <div className="flex p-2 text-right text-sm italic text-primary/60">
+            <AvatarGroup users={otherUsers} />
+          </div>
+          <div className="z-10 mx-2 max-w-min self-start rounded-b-xl bg-secondary p-1 px-2 shadow">
+            <Button variant="ghost" size="sm" onClick={toggleBookmark}>
+              <Bookmark
+                size={iconSize - 2}
+                fill={bookmarked ? "currentColor" : "none"}
+                className="mr-2"
+              />
+              <p>{bookmarked ? "Unbookmark" : "Bookmark"}</p>
+            </Button>
+          </div>
         </div>
       )}
     </div>
   );
+}
+
+function getOtherUsers(users: Record<string, any>[], id: number | undefined) {
+  return users.filter((user) => user.ID !== id);
 }

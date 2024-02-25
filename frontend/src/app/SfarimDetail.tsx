@@ -1,3 +1,4 @@
+import UserAvatar from "@/components/UserAvatar";
 import { capitalize } from "@/lib/utils";
 import {
   Blend,
@@ -107,6 +108,20 @@ export default function SfarimDetail({
           <Languages size={iconSize} className="min-w-max" />
           <p className="font-bold">Language:</p>
           <p>{getLanguages(sefer.language)}</p>
+        </div>
+      )}
+      {sefer?.users && sefer?.users.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <p className="font-bold">Bookmarked By:</p>
+          {sefer?.users.map((user: Record<string, any>, index: number) => (
+            <div
+              key={index}
+              className="flex items-center gap-3 text-foreground/60"
+            >
+              <UserAvatar user={user} size="xs" />
+              <p>{capitalize(user.name)}</p>
+            </div>
+          ))}
         </div>
       )}
     </div>
