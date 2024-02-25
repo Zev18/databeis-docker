@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { SfarimQuery } from "./types";
 import { delimiter } from "./consts";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -62,4 +63,18 @@ export const isBookmarked = (
 ) => {
   if (!users || !id) return false;
   return users.some((user) => user.ID == id);
+};
+
+export const setUrlPage = (
+  params: ReadonlyURLSearchParams,
+  page: number,
+  path = "/",
+): string => {
+  const p = new URLSearchParams(Array.from(params.entries()));
+  if (page < 2) {
+    p.delete("page");
+  } else {
+    p.set("page", page.toString());
+  }
+  return path + "?" + p.toString();
 };
