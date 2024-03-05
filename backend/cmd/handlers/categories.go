@@ -177,3 +177,23 @@ func PutCategory(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(category)
 }
+
+func DeleteCategory(c *fiber.Ctx) error {
+	user, err := Authorize(c)
+	if err != nil {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+	if !user.IsAdmin {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthorized",
+		})
+	}
+	var category models.Category
+	database.DB.Db.Where("id = ?", c.Params("id")).First(&category)
+	database.DB.Db.Delete(&category)
+	return c.Status(fiber.StatusOK).JSON(category)
+}

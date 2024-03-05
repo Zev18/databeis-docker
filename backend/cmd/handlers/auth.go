@@ -90,6 +90,8 @@ func Callback(c *fiber.Ctx) error {
 
 		// Insert the new user into the database
 		if err := database.DB.Db.Create(&user).Error; err != nil {
+			log.Println(user)
+			log.Println(err)
 			return c.SendString("Error inserting user into the database")
 		}
 

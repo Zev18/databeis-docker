@@ -42,16 +42,22 @@ type Category struct {
 
 type User struct {
 	gorm.Model
-	Email           string   `json:"email" gorm:"text;uniqueIndex;default:null"`
-	Name            string   `json:"name" gorm:"text;default:null"`
-	FirstName       string   `json:"firstName" gorm:"text;default:null"`
-	LastName        string   `json:"lastName" gorm:"text;default:null"`
-	NickName        string   `json:"nickName" gorm:"text;default:null"`
-	DisplayName     string   `json:"displayName" gorm:"text;default:null"`
-	AvatarURL       string   `json:"avatarUrl" gorm:"text;default:null"`
-	CustomAvatarURL *string  `json:"customAvatarUrl" gorm:"text;default:null"`
-	IsAdmin         bool     `json:"isAdmin" gorm:"default:false"`
-	GradYear        *int     `json:"gradYear" gorm:"default:null"`
-	Affiliation     *int     `json:"affiliation" gorm:"text;default:null"`
-	Sfarim          []*Sefer `json:"sfarim" gorm:"many2many:user_sfarim;"`
+	Email           string       `json:"email" gorm:"text;uniqueIndex;default:null"`
+	Name            string       `json:"name" gorm:"text;default:null"`
+	FirstName       string       `json:"firstName" gorm:"text;default:null"`
+	LastName        string       `json:"lastName" gorm:"text;default:null"`
+	NickName        string       `json:"nickName" gorm:"text;default:null"`
+	DisplayName     string       `json:"displayName" gorm:"text;default:null"`
+	AvatarURL       string       `json:"avatarUrl" gorm:"text;default:null"`
+	CustomAvatarURL *string      `json:"customAvatarUrl" gorm:"text;default:null"`
+	IsAdmin         bool         `json:"isAdmin" gorm:"default:false"`
+	GradYear        *int         `json:"gradYear" gorm:"default:null"`
+	AffiliationID   *uint        `json:"affiliationId" gorm:"default:null"`
+	Affiliation     *Affiliation `json:"affiliation" gorm:"default:null"`
+	Sfarim          []*Sefer     `json:"sfarim" gorm:"many2many:user_sfarim;"`
+}
+
+type Affiliation struct {
+	gorm.Model
+	Name string `json:"name" gorm:"text;uniqueIndex;default:null"`
 }

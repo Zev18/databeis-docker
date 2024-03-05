@@ -3,6 +3,7 @@ package handlers
 import (
 	"api/cmd/database"
 	"api/cmd/models"
+	"log"
 	"strconv"
 	"strings"
 
@@ -15,7 +16,7 @@ func GetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var user models.User
 
-	result := database.DB.Db.First(&user, id)
+	result := database.DB.Db.Preload("Affiliation").First(&user, id)
 	if err := result.Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "No user with that Id exists"})
@@ -61,6 +62,20 @@ func UpdateUser(c *fiber.Ctx) error {
 		AvatarURL: payload.AvatarURL,
 		IsAdmin:   payload.IsAdmin,
 	})
+
+	if payload.Affiliation != nil {
+		log.Println(payload.Affiliation.Name)
+	} else {
+		log.Println("no affiliation", payload.Affiliation)
+	}
+
+	if payload.Affiliation != nil {
+		database.DB.Db.Model(&user).Association("Affiliation").Replace(&models.Affiliation{
+			Name: strings.ToLower(payload.Affiliation.Name),
+		})
+	} else {
+		database.DB.Db.Model(&user).Association("Affiliation").Clear()
+	}
 	return c.Status(fiber.StatusOK).JSON(user)
 }
 
