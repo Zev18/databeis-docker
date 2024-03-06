@@ -1,10 +1,20 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { SfarimQuery } from "./types";
+import { SfarimQuery, User } from "./types";
 import { delimiter } from "./consts";
 import { ReadonlyURLSearchParams } from "next/navigation";
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/**
+ * Capitalizes the first letter of every word in the input string.
+ *
+ * @param {string} input - the input string to capitalize
+ * @return {string} the capitalized input string
+ */
+export const capitalizeEverything = (input: string): string => {
+  return input.replace(/\b\w/g, (char) => char.toUpperCase());
+};
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,6 +75,14 @@ export const isBookmarked = (
   return users.some((user) => user.ID == id);
 };
 
+/**
+ * Sets the page parameter in the URL and returns the updated URL.
+ *
+ * @param {ReadonlyURLSearchParams} params - The original URL search parameters
+ * @param {number} page - The page number to set
+ * @param {string} path - The path to append the updated URL to (default is "/")
+ * @return {string} The updated URL
+ */
 export const setUrlPage = (
   params: ReadonlyURLSearchParams,
   page: number,
@@ -77,4 +95,34 @@ export const setUrlPage = (
     p.set("page", page.toString());
   }
   return path + "?" + p.toString();
+};
+
+/**
+ * Resizes the image URL to the specified size if it is a google profile pic..
+ *
+ * @param {number} size - the desired size of the image
+ * @param {string} url - the URL of the image
+ * @return {string} the modified image URL
+ */
+export const hiRes = (size: number, url: string | null | undefined) => {
+  if (!url) return "";
+  if (!url.includes("googleusercontent")) return url;
+  return url.replace(/=s96-c$/, `=s${size}`);
+};
+
+export const formatUserData = (data: Record<string, any>) => {
+  const user: User = {
+    id: data.ID,
+    name: data.displayName || data.name,
+    email: data.email,
+    isAdmin: data.isAdmin,
+    avatarUrl: data.customAvatarUrl || data.avatarUrl,
+  };
+  if (data.affiliation) {
+    user.affiliation = data.affiliation.name;
+  }
+  if (data.gradYear) {
+    user.gradYear = data.gradYear;
+  }
+  return user;
 };

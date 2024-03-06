@@ -4,6 +4,8 @@ export type User = {
   email: string;
   isAdmin: boolean;
   avatarUrl: string;
+  affiliation?: string;
+  gradYear?: number;
 };
 
 export type PageInfo = {

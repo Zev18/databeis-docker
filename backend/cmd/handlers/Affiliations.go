@@ -52,6 +52,17 @@ func GetAffiliation(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(affiliation)
 }
 
+func GetAllAffiliations(c *fiber.Ctx) error {
+	order := c.Query("order", "created_at")
+	direction := c.Query("direction", "asc")
+	var affiliations []models.Affiliation
+	result := database.DB.Db.Order(order + " " + direction).Find(&affiliations)
+	if result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": result.Error})
+	}
+	return c.Status(fiber.StatusOK).JSON(affiliations)
+}
+
 func DeleteAffiliation(c *fiber.Ctx) error {
 	user, err := Authorize(c)
 	if err != nil {

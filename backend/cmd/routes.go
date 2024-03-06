@@ -36,7 +36,7 @@ func setupRoutes(app *fiber.App) {
 		router.Get("/make-admin", handlers.MakeAdmin)
 		router.Get("/remove-admin", handlers.RemoveAdmin)
 		router.Get("/:id", handlers.GetUser)
-		router.Put("/:id", handlers.UpdateUser)
+		router.Patch("/:id", handlers.UpdateUser)
 	})
 
 	app.Route("/categories", func(router fiber.Router) {
@@ -47,6 +47,7 @@ func setupRoutes(app *fiber.App) {
 	})
 
 	app.Route("/affiliations", func(router fiber.Router) {
+		router.Get("", handlers.GetAllAffiliations)
 		router.Get("/:id", handlers.GetAffiliation)
 		router.Put("/:id", handlers.UpdateAffiliation)
 		router.Post("", handlers.CreateAffiliation)

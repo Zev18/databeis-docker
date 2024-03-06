@@ -161,7 +161,7 @@ func Authorize(c *fiber.Ctx) (*models.User, error) {
 	claims := token.Claims.(*jwt.StandardClaims)
 
 	var user models.User
-	err = database.DB.Db.Where("id = ?", claims.Issuer).First(&user).Error
+	err = database.DB.Db.Preload("Affiliation").Where("id = ?", claims.Issuer).First(&user).Error
 	if err != nil {
 		return nil, err
 	}

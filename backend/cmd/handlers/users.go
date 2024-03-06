@@ -57,22 +57,19 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "fail", "message": err.Error()})
 	}
 
-	database.DB.Db.Model(&user).Updates(models.User{
-		Name:      payload.Name,
-		AvatarURL: payload.AvatarURL,
-		IsAdmin:   payload.IsAdmin,
+	log.Printf("%+v\n", payload)
+
+	database.DB.Db.Model(&user).Updates(&map[string]interface{}{
+		"DisplayName":     payload.DisplayName,
+		"GradYear":        payload.GradYear,
 	})
 
 	if payload.Affiliation != nil {
-		log.Println(payload.Affiliation.Name)
-	} else {
-		log.Println("no affiliation", payload.Affiliation)
-	}
-
-	if payload.Affiliation != nil {
-		database.DB.Db.Model(&user).Association("Affiliation").Replace(&models.Affiliation{
-			Name: strings.ToLower(payload.Affiliation.Name),
-		})
+		var affiliation models.Affiliation
+		result := database.DB.Db.Where("name ILIKE ?", payload.Affiliation.Name).First(&affiliation)
+		if result.Error == nil {
+			database.DB.Db.Model(&user).Association("Affiliation").Replace(&affiliation)
+		}
 	} else {
 		database.DB.Db.Model(&user).Association("Affiliation").Clear()
 	}

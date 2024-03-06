@@ -1,16 +1,18 @@
-import React from "react";
-import UserCard from "./UserCard";
-import { redirect } from "next/navigation";
 import { apiUrlServer } from "@/lib/consts";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import ProfileSection from "./ProfileSection";
+
+const fetchAffiliations = async () => {
+  const url = new URL(apiUrlServer + "/api/affiliations?order=name");
+  const res = await fetch(url.toString(), {
+    headers: { "Content-Type": "application/json" },
+  });
+  const data = await res.json();
+  return data;
+};
 
 export default async function Profile() {
-  console.log(
-    await fetch(apiUrlServer + "/api/authenticate", {
-      credentials: "include",
-      headers: headers(),
-    }),
-  );
   const loggedIn = (
     await fetch(apiUrlServer + "/api/authenticate", {
       credentials: "include",
@@ -22,10 +24,14 @@ export default async function Profile() {
     redirect("/login");
   }
 
+  const affiliations = await fetchAffiliations();
+
   return (
-    <div className="flex w-full flex-col items-center gap-4 p-4">
-      <h2 className="w-full text-2xl font-bold">My profile</h2>
-      <UserCard />
+    <div className="flex w-full justify-center">
+      <div className="flex w-full max-w-3xl flex-col items-center gap-4 p-4">
+        <h2 className="w-full text-2xl font-bold">My profile</h2>
+        <ProfileSection affiliations={affiliations} />
+      </div>
     </div>
   );
 }
