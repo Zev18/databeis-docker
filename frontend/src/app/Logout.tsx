@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useAuthContext } from "@/context/AuthContext";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -21,7 +20,7 @@ export default function Logout() {
   };
   return (
     isLoggedIn && (
-      <Button onClick={logout}>
+      <Button onClick={logout} className="w-full">
         <LogOut size={18} className="mr-2" /> Logout
       </Button>
     )

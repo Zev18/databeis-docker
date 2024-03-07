@@ -1,5 +1,3 @@
-"use client";
-
 import Login from "@/components/header/Login";
 import { apiUrlClient } from "@/lib/consts";
 import { menuPages } from "@/lib/data";

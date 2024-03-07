@@ -3,7 +3,7 @@
 import Logout from "@/app/Logout";
 import { menuPages } from "@/lib/data";
 import { useAuthStore } from "@/store/useAuthStore";
-import { LayoutDashboard } from "lucide-react";
+import { Home, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { ReactNode, createElement, useEffect, useState } from "react";
 import {
@@ -14,6 +14,8 @@ import {
 } from "../ui/drawer";
 import { useAtom } from "jotai";
 import { navOpenAtom } from "@/store/atoms";
+import { usePathname } from "next/navigation";
+import { Button } from "../ui/button";
 
 const iconSize = 20;
 
@@ -26,6 +28,8 @@ export default function MobileMenu({
 }) {
   const [pages, setPages] = useState(menuPages);
   const { isLoggedIn, user } = useAuthStore.getState();
+
+  const path = usePathname();
 
   useEffect(() => {
     if (
@@ -66,7 +70,19 @@ export default function MobileMenu({
             </div>
           ))}
         </div>
-        <DrawerFooter>
+        <DrawerFooter className="w-full flex-row">
+          {path !== "/" && (
+            <Button asChild variant="secondary">
+              <Link
+                href="/"
+                className="flex w-full items-center gap-2 text-lg"
+                onClick={() => setNavOpen(false)}
+              >
+                <Home size={iconSize} />
+                <span>Home</span>
+              </Link>
+            </Button>
+          )}
           <Logout />
         </DrawerFooter>
       </DrawerContent>

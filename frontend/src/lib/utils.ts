@@ -126,3 +126,5 @@ export const formatUserData = (data: Record<string, any>) => {
   }
   return user;
 };
+
+export const isBrowser = typeof window !== "undefined";
