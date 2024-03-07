@@ -10,9 +10,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ProfileCard from "./ProfileCard";
 
-gsap.config({
-  nullTargetWarn: false,
-});
+const duration = 0.6;
+const easing = "power4.inOut";
 
 export default function Header() {
   const path = usePathname();
@@ -25,15 +24,10 @@ export default function Header() {
 
   useEffect(() => {
     if (path !== initialPath) {
-      console.log(path);
       setInitialPath("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path]);
-
-  useEffect(() => {
-    isAboveSm;
-  }, [isAboveSm]);
 
   const container = useRef(null);
 
@@ -41,7 +35,7 @@ export default function Header() {
     if (isAboveSm) {
       if (!isInitialLoad) {
         gsap.set(".arrow", {
-          autoAlpha: 0,
+          autoAlpha: isHome ? 1 : 0,
           x: !isHome ? -30 : 0,
         });
         gsap.set(".title", {
@@ -58,21 +52,25 @@ export default function Header() {
           gsap.to(".arrow", {
             autoAlpha: 1,
             x: 0,
-            duration: 0.2,
+            duration: duration,
+            ease: easing,
           });
           gsap.to(".title", {
             x: 30,
-            duration: 0.2,
+            duration: duration,
+            ease: easing,
           });
         } else {
           gsap.to(".arrow", {
             autoAlpha: 0,
             x: -30,
-            duration: 0.2,
+            duration: duration,
+            ease: easing,
           });
           gsap.to(".title", {
             x: 0,
-            duration: 0.2,
+            duration: duration,
+            ease: easing,
           });
         }
       }
@@ -88,16 +86,17 @@ export default function Header() {
         className="context relative flex items-center gap-4 text-3xl font-bold"
         style={{ lineHeight: "10px", height: "10px" }}
       >
-        {isHome && isInitialLoad ? (
+        {isHome ? (
           <div
             className={cn(
-              "arrow invisible absolute hidden translate-x-[-30px] sm:block",
+              "arrow absolute hidden translate-x-[-30px] sm:block",
+              isInitialLoad && "invisible",
             )}
           >
             <ArrowLeft />
           </div>
         ) : (
-          <div className={cn("arrow absolute hidden sm:block")}>
+          <div className={cn("arrow absolute sm:block")}>
             <ArrowLeft />
           </div>
         )}
