@@ -1,6 +1,6 @@
 "use client";
 
-import { useBreakpoint } from "@/app/hooks/useBreakpoint";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { cn } from "@/lib/utils";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -79,7 +79,7 @@ export default function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-30 flex w-full items-center justify-between border-b-2 border-secondary bg-background p-5">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b-2 border-secondary bg-background p-5">
       <Link
         href="/"
         ref={container}
@@ -96,7 +96,7 @@ export default function Header() {
             <ArrowLeft />
           </div>
         ) : (
-          <div className={cn("arrow absolute sm:block")}>
+          <div className={cn("arrow invisible absolute sm:visible sm:block")}>
             <ArrowLeft />
           </div>
         )}

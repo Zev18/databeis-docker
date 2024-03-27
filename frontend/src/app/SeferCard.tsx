@@ -1,6 +1,6 @@
+import AvatarGroup from "@/components/AvatarGroup";
 import LanguageIcon from "@/components/LanguageIcon";
 import Unverified from "@/components/Unverified";
-import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { apiUrlClient } from "@/lib/consts";
@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { revalidate } from "./actions";
-import AvatarGroup from "@/components/AvatarGroup";
 
 const iconSize = 18;
 

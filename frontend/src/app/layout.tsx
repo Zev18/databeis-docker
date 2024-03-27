@@ -63,7 +63,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen font-sans antialiased",
+          "flex min-h-screen flex-col font-sans antialiased",
           GeistSans.variable,
           GeistMono.variable,
         )}
@@ -72,7 +72,7 @@ export default async function RootLayout({
         <Providers>
           <MobileNav />
           <Header />
-          <main className={GeistSans.variable}>{children}</main>
+          <main className={cn(GeistSans.variable)}>{children}</main>
         </Providers>
       </body>
     </html>

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Toggle } from "@/components/ui/toggle";
-import { delimiter } from "@/lib/consts";
+import { delimiter, languages } from "@/lib/consts";
 import { capitalize } from "@/lib/utils";
 import { Group, Languages, X } from "lucide-react";
 import { useQueryState } from "nuqs";
@@ -20,8 +20,6 @@ import { useEffect, useState } from "react";
 import CategoryListing from "./CategoryListing";
 
 const iconSize = 18;
-
-const languages = ["english", "hebrew", "aramaic"];
 
 export default function Filters({
   categories = [],
@@ -120,6 +118,7 @@ export default function Filters({
           <div className="my-4 flex gap-2">
             {languages.map((language) => (
               <Toggle
+                variant="outline"
                 key={language}
                 value={language}
                 defaultPressed={containsLang(language)}
