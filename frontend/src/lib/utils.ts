@@ -128,3 +128,25 @@ export const formatUserData = (data: Record<string, any>) => {
 };
 
 export const isBrowser = typeof window !== "undefined";
+
+/**
+ * Generates a set of languages based on the input string.
+ *
+ * @param {string} s - the input string to search for languages
+ * @return {Set<string>} a set containing languages found in the input string
+ */
+export const languagesToSet = (s: string): Set<string> => {
+  const set = new Set<string>();
+  if (!s) return set;
+  s = s.toLowerCase();
+  if (s.includes("english")) {
+    set.add("english");
+  }
+  if (s.includes("hebrew")) {
+    set.add("hebrew");
+  }
+  if (s.includes("aramaic")) {
+    set.add("aramaic");
+  }
+  return set;
+};

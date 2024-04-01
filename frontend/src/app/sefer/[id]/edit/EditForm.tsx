@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, PlusCircle, X } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
-import { capitalize, cn } from "@/lib/utils";
+import { capitalize, cn, languagesToSet } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
@@ -49,6 +49,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const iconSize = 20;
 
@@ -56,7 +57,7 @@ const seferSchema = z.object({
   confirmed: z.boolean().optional(),
   shelfSection: z
     .string()
-    .optional()
+    .nullish()
     .refine(
       (value) => {
         if (!value) return true;
@@ -68,14 +69,18 @@ const seferSchema = z.object({
       },
     ),
   title: z.string().min(1, "Title is required."),
-  hebrewTitle: z.string().optional(),
-  masechetSection: z.string().optional(),
-  volume: z.string().optional(),
-  languages: z.set(z.string()).optional(),
+  author: z.string().nullish(),
+  hebrewTitle: z.string().nullish(),
+  masechetSection: z.string().nullish(),
+  volume: z.string().nullish(),
+  publisherType: z.string().nullish(),
+  languages: z.set(z.string()).nullish(),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
-  categoryId: z.coerce.number().optional(),
-  subcategoryId: z.coerce.number().optional(),
-  subsubcategoryId: z.coerce.number().optional(),
+  categoryId: z.coerce.number().nullish(),
+  subcategoryId: z.coerce.number().nullish(),
+  subsubcategoryId: z.coerce.number().nullish(),
+  crosslist: z.string().nullish(),
+  crosslist2: z.string().nullish(),
 });
 
 const fetchCategories = async () => {
@@ -84,25 +89,51 @@ const fetchCategories = async () => {
   return categories;
 };
 
-export default function EditForm() {
+export default function EditForm({ sefer }: { sefer: Record<string, any> }) {
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
 
+  const router = useRouter();
+
   const [visibleFields, setVisibleFields] = useState(new Set<string>());
-  const [selCategory, setSelCategory] = useState<Record<string, any>>();
-  const [selSubcategory, setSelSubcategory] = useState<Record<string, any>>();
-  const [selSubsubcategory, setSelSubsubcategory] =
-    useState<Record<string, any>>();
+  const [selCategory, setSelCategory] = useState<
+    Record<string, any> | undefined
+  >(categories?.find((c: Record<string, any>) => c.id === sefer.categoryId));
+  const [selSubcategory, setSelSubcategory] = useState<
+    Record<string, any> | undefined
+  >(
+    selCategory?.children?.find(
+      (c: Record<string, any>) => c.id === sefer.subcategoryId,
+    ),
+  );
+  const [selSubsubcategory, setSelSubsubcategory] = useState<
+    Record<string, any> | undefined
+  >(
+    selSubcategory?.children?.find(
+      (c: Record<string, any>) => c.id === sefer.subsubcategoryId,
+    ),
+  );
   const [selectingCategory, setSelectingCategory] = useState(false);
 
   const form = useForm<z.infer<typeof seferSchema>>({
     resolver: zodResolver(seferSchema),
     defaultValues: {
-      confirmed: true,
-      quantity: 0,
-      languages: new Set<string>(),
+      confirmed: sefer.confirmed || true,
+      quantity: sefer.quantity || 0,
+      languages: languagesToSet(sefer.language),
+      masechetSection: sefer.masechetSection,
+      hebrewTitle: sefer.hebrewTitle,
+      title: sefer.title,
+      shelfSection: sefer.shelfSection,
+      categoryId: sefer.categoryId,
+      subcategoryId: sefer.subcategoryId,
+      subsubcategoryId: sefer.subsubcategoryId,
+      publisherType: sefer.publisherType,
+      author: sefer.author,
+      crosslist: sefer.crosslist,
+      crosslist2: sefer.crosslist2,
     },
   });
 
@@ -110,32 +141,36 @@ export default function EditForm() {
     mutationFn: (values: z.infer<typeof seferSchema>) => {
       const data = {
         confirmed: values.confirmed,
+        author: values.author,
         shelfSection: values.shelfSection,
         title: values.title,
         hebrewTitle: values.hebrewTitle,
         masechetSection: values.masechetSection,
         volume: values.volume,
-        language: stringifySet(values.languages),
+        language: stringifySet(values.languages || undefined),
         quantity: values.quantity,
         categoryId: values.categoryId,
         subcategoryId: values.subcategoryId,
         subsubcategoryId: values.subsubcategoryId,
+        crosslist: values.crosslist?.trim(),
+        crosslist2: values.crosslist2?.trim(),
       };
 
       const requestOptions: RequestInit = {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(data),
       };
 
-      return fetch(apiUrlClient + "/api/sfarim", requestOptions);
+      return fetch(apiUrlClient + "/api/sfarim/" + sefer.ID, requestOptions);
     },
     onSuccess: (data) => {
-      toast.success("Sefer created");
+      toast.success("Sefer edited successfully");
+      router.push("/");
     },
     onError: (error) => {
-      toast.error("Error creating sefer", {
+      toast.error("Error editing sefer", {
         description: error.message,
       });
     },
@@ -148,22 +183,11 @@ export default function EditForm() {
     submission.mutate(values);
   };
 
-  useEffect(() => {
-    console.log(selCategory);
-  }, [selCategory]);
-  useEffect(() => {
-    console.log(selSubcategory);
-  }, [selSubcategory]);
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create Sefer</CardTitle>
-        <CardDescription>
-          To edit or delete a sefer, search and select one from the homepage and
-          then click &quot;edit&quot; or &quot;delete.&quot; The only required
-          field is the title.
-        </CardDescription>
+        <CardTitle>Edit Sefer</CardTitle>
+        <CardDescription>Edit the details of a sefer</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -236,6 +260,19 @@ export default function EditForm() {
                 Add Hebrew Title
               </Button>
             )}
+            <FormField
+              control={form.control}
+              name="author"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Author</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="quantity"
@@ -314,6 +351,19 @@ export default function EditForm() {
             )}
             <FormField
               control={form.control}
+              name="publisherType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Publisher / Type</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="languages"
               render={({ field }) => (
                 <FormItem>
@@ -367,11 +417,13 @@ export default function EditForm() {
                               !field.value && "text-muted-foreground",
                             )}
                           >
-                            {field.value
-                              ? categories.find(
-                                  (category: Record<string, any>) =>
-                                    category.id == field.value,
-                                )?.id
+                            {field.value && categories
+                              ? capitalize(
+                                  categories.find(
+                                    (category: Record<string, any>) =>
+                                      category.id == field.value,
+                                  )?.name,
+                                )
                               : "Select category"}
                             <ChevronsUpDown size={iconSize} />
                           </Button>
@@ -397,7 +449,6 @@ export default function EditForm() {
                                     }}
                                   >
                                     <Check
-                                      size={iconSize}
                                       className={cn(
                                         "mr-2 h-2 w-4",
                                         category.id == field.value
@@ -541,7 +592,35 @@ export default function EditForm() {
                 )}
               />
             )}
-            <Button type="submit">Create</Button>
+            <FormField
+              control={form.control}
+              name="crosslist"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Crosslist</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {form.getValues("crosslist") && (
+              <FormField
+                control={form.control}
+                name="crosslist2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Crosslist 2</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value ?? ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            <Button type="submit">Save</Button>
           </form>
         </Form>
       </CardContent>

@@ -24,7 +24,7 @@ func setupRoutes(app *fiber.App) {
 
 	app.Route("/sfarim/:id", func(router fiber.Router) {
 		router.Get("", handlers.GetSefer)
-		router.Put("", handlers.PutSefer)
+		router.Patch("", handlers.PutSefer)
 		router.Delete("", handlers.DeleteSefer)
 	})
 

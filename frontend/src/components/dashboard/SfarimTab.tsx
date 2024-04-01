@@ -62,14 +62,18 @@ const seferSchema = z.object({
       },
     ),
   title: z.string().min(1, "Title is required."),
+  author: z.string().optional(),
   hebrewTitle: z.string().optional(),
   masechetSection: z.string().optional(),
   volume: z.string().optional(),
   languages: z.set(z.string()).optional(),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
+  publisherType: z.string().optional(),
   categoryId: z.coerce.number().optional(),
   subcategoryId: z.coerce.number().optional(),
   subsubcategoryId: z.coerce.number().optional(),
+  crosslist: z.string().optional(),
+  crosslist2: z.string().optional(),
 });
 
 const fetchCategories = async () => {
@@ -104,16 +108,20 @@ export default function SfarimTab() {
     mutationFn: (values: z.infer<typeof seferSchema>) => {
       const data = {
         confirmed: values.confirmed,
+        author: values.author,
         shelfSection: values.shelfSection,
         title: values.title,
         hebrewTitle: values.hebrewTitle,
         masechetSection: values.masechetSection,
+        publisherType: values.publisherType,
         volume: values.volume,
         language: stringifySet(values.languages),
         quantity: values.quantity,
         categoryId: values.categoryId,
         subcategoryId: values.subcategoryId,
         subsubcategoryId: values.subsubcategoryId,
+        crosslist: values.crosslist?.trim(),
+        crosslist2: values.crosslist2?.trim(),
       };
 
       const requestOptions: RequestInit = {
@@ -141,13 +149,6 @@ export default function SfarimTab() {
   const onSubmit = async (values: z.infer<typeof seferSchema>) => {
     submission.mutate(values);
   };
-
-  useEffect(() => {
-    console.log(selCategory);
-  }, [selCategory]);
-  useEffect(() => {
-    console.log(selSubcategory);
-  }, [selSubcategory]);
 
   return (
     <Card>
@@ -232,6 +233,19 @@ export default function SfarimTab() {
             )}
             <FormField
               control={form.control}
+              name="author"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Author</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="quantity"
               render={({ field }) => (
                 <FormItem>
@@ -308,6 +322,19 @@ export default function SfarimTab() {
             )}
             <FormField
               control={form.control}
+              name="publisherType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Publisher / Type</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="languages"
               render={({ field }) => (
                 <FormItem>
@@ -362,10 +389,12 @@ export default function SfarimTab() {
                             )}
                           >
                             {field.value
-                              ? categories.find(
-                                  (category: Record<string, any>) =>
-                                    category.id == field.value,
-                                )?.id
+                              ? capitalize(
+                                  categories.find(
+                                    (category: Record<string, any>) =>
+                                      category.id == field.value,
+                                  )?.name,
+                                )
                               : "Select category"}
                             <ChevronsUpDown size={iconSize} />
                           </Button>
@@ -531,6 +560,34 @@ export default function SfarimTab() {
                         </Button>
                       )}
                     </div>
+                  </FormItem>
+                )}
+              />
+            )}
+            <FormField
+              control={form.control}
+              name="crosslist"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Crosslist</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {form.getValues("crosslist") && (
+              <FormField
+                control={form.control}
+                name="crosslist2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Crosslist 2</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value ?? ""} />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -26,7 +26,7 @@ export default async function Edit({ params }: { params: { id: string } }) {
 
   return data.status !== "fail" ? (
     <div className="m-4 mb-[25%]">
-      <EditForm />
+      <EditForm sefer={data} />
     </div>
   ) : (
     notFound()

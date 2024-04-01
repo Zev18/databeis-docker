@@ -120,7 +120,7 @@ export default function SeferCard({ sefer }: { sefer: Record<string, any> }) {
               )}
               {(sefer.crosslist || sefer.crosslist2) && (
                 <div className="flex items-center gap-1 text-sm">
-                  <Blend />
+                  <Blend size={iconSize} />
                   {sefer.crosslist && <p>{capitalize(sefer.crosslist)}</p>}
                   {sefer.crosslist && sefer.crosslist2 && <p> - </p>}
                   {sefer.crosslist2 && <p>{capitalize(sefer.crosslist2)}</p>}
