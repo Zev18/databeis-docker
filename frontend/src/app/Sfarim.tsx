@@ -1,29 +1,31 @@
 "use client";
 
 import SfarimPagination from "@/components/SfarimPagination";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
-import { apiUrlClient } from "@/lib/consts";
-import { trimStrings } from "@/lib/utils";
+import { apiUrlClient, delimiter } from "@/lib/consts";
+import { capitalize, formatQueryParams, trimStrings } from "@/lib/utils";
 import { openSeferAtom } from "@/store/atoms";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai";
+import { Loader2, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import SeferCard from "./SeferCard";
 import SfarimDetail from "./SfarimDetail";
 import { revalidate } from "./actions";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { SfarimQuery } from "@/lib/types";
 
 export default function Sfarim({
   initialSfarim,
@@ -48,6 +50,32 @@ export default function Sfarim({
   const [query] = useQueryState("query");
   const [language] = useQueryState("language");
   const [categories] = useQueryState("categories");
+
+  const deleteSefer = useMutation({
+    mutationFn: (id: number) => {
+      return fetch(`${apiUrlClient}/api/sfarim/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        method: "DELETE",
+      });
+    },
+    onError: (error) => {
+      toast.error("Deletion unsuccessful", { description: error.message });
+    },
+    onSuccess: async (data) => {
+      toast.success("Deletion successful", {
+        description: openSefer
+          ? `"${capitalize(openSefer.title)}" deleted`
+          : "Sefer deleted",
+      });
+      setOpenSefer(null);
+      const newData = trimStrings(await fetchInitialSfarim(params.toString()));
+      setSfarim(newData.data);
+      setPagination(newData.pagination);
+    },
+  });
 
   useEffect(() => {
     setPagination(initialSfarim.pagination);
@@ -126,7 +154,15 @@ export default function Sfarim({
                   >
                     Actually nah
                   </Button>
-                  <Button variant="destructive" className="grow">
+                  <Button
+                    variant="destructive"
+                    className="grow"
+                    disabled={deleteSefer.isPending}
+                    onClick={() => deleteSefer.mutate(openSefer?.ID)}
+                  >
+                    {deleteSefer.isPending && (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    )}
                     Yes!!!!
                   </Button>
                 </div>
@@ -149,3 +185,10 @@ export default function Sfarim({
     </>
   );
 }
+
+const fetchInitialSfarim = async (q: string) => {
+  const res = await fetch(apiUrlClient + "/api/sfarim?" + q, {
+    headers: { "Content-Type": "application/json" },
+  });
+  return res.json();
+};

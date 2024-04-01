@@ -20,7 +20,7 @@ export default function Header() {
 
   const isHome = path === "/";
 
-  const isInitialLoad = initialPath === path;
+  const isInitialLoad = (initialPath == "/") === (path == "/");
 
   useEffect(() => {
     if (path !== initialPath) {

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { apiUrlClient, languages } from "@/lib/consts";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { toast } from "sonner";
 
 const iconSize = 20;
 
@@ -65,10 +66,10 @@ const seferSchema = z.object({
   masechetSection: z.string().optional(),
   volume: z.string().optional(),
   languages: z.set(z.string()).optional(),
-  quantity: z.coerce.number(),
+  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
   categoryId: z.coerce.number().optional(),
-  subCategoryId: z.coerce.number().optional(),
-  subSubCategoryId: z.coerce.number().optional(),
+  subcategoryId: z.coerce.number().optional(),
+  subsubcategoryId: z.coerce.number().optional(),
 });
 
 const fetchCategories = async () => {
@@ -99,8 +100,46 @@ export default function SfarimTab() {
     },
   });
 
+  const submission = useMutation({
+    mutationFn: (values: z.infer<typeof seferSchema>) => {
+      const data = {
+        confirmed: values.confirmed,
+        shelfSection: values.shelfSection,
+        title: values.title,
+        hebrewTitle: values.hebrewTitle,
+        masechetSection: values.masechetSection,
+        volume: values.volume,
+        language: stringifySet(values.languages),
+        quantity: values.quantity,
+        categoryId: values.categoryId,
+        subcategoryId: values.subcategoryId,
+        subsubcategoryId: values.subsubcategoryId,
+      };
+
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      };
+
+      return fetch(apiUrlClient + "/api/sfarim", requestOptions);
+    },
+    onSuccess: (data) => {
+      toast.success("Sefer created");
+    },
+    onError: (error) => {
+      toast.error("Error creating sefer", {
+        description: error.message,
+      });
+    },
+    onSettled: () => {
+      form.reset();
+    },
+  });
+
   const onSubmit = async (values: z.infer<typeof seferSchema>) => {
-    console.log(values);
+    submission.mutate(values);
   };
 
   useEffect(() => {
@@ -388,7 +427,7 @@ export default function SfarimTab() {
             {selCategory && selCategory.children && (
               <FormField
                 control={form.control}
-                name="subCategoryId"
+                name="subcategoryId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Subcategory</FormLabel>
@@ -429,7 +468,7 @@ export default function SfarimTab() {
                         <Button
                           variant="outline"
                           onClick={() => {
-                            form.setValue("subCategoryId", undefined);
+                            form.setValue("subcategoryId", undefined);
                             setSelSubcategory(undefined);
                           }}
                         >
@@ -444,7 +483,7 @@ export default function SfarimTab() {
             {selSubcategory && selSubcategory.children && (
               <FormField
                 control={form.control}
-                name="subSubCategoryId"
+                name="subsubcategoryId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Subsubcategory</FormLabel>
@@ -484,7 +523,7 @@ export default function SfarimTab() {
                         <Button
                           variant="outline"
                           onClick={() => {
-                            form.setValue("subSubCategoryId", undefined);
+                            form.setValue("subsubcategoryId", undefined);
                             setSelSubsubcategory(undefined);
                           }}
                         >
@@ -503,3 +542,15 @@ export default function SfarimTab() {
     </Card>
   );
 }
+
+const stringifySet = (s: Set<string> | undefined) => {
+  if (!s) return "";
+  let result = "";
+  s.forEach((value, _, set) => {
+    result += value;
+    if (set.size > 1 && value !== Array.from(set)[set.size - 1]) {
+      result += "/";
+    }
+  });
+  return result;
+};

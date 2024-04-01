@@ -11,6 +11,7 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -74,6 +75,7 @@ export default async function RootLayout({
           <Header />
           <main className={cn(GeistSans.variable)}>{children}</main>
         </Providers>
+        <Toaster />
       </body>
     </html>
   );

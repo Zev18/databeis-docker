@@ -10,6 +10,7 @@ import {
 } from "./ui/tooltip";
 
 export default function LanguageIcon({ languages }: { languages: string }) {
+  if (!languages) return;
   const colors = getColor(languages);
   const strings = getString(languages);
   return (
