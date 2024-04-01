@@ -1,7 +1,20 @@
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
+import { apiUrlServer } from "@/lib/consts";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import React from "react";
 
-export default function Admin() {
+export default async function Admin() {
+  const res = await fetch(apiUrlServer + "/api/authenticate", {
+    credentials: "include",
+    headers: headers(),
+  });
+  const user = await res.json();
+
+  if (!user.isAdmin) {
+    redirect("/login");
+  }
+
   return (
     <div className="mb-4 flex w-full justify-center">
       <div className="flex w-full flex-col items-center gap-4 px-4">

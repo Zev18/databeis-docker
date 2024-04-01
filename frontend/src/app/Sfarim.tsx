@@ -10,22 +10,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
-import { apiUrlClient, delimiter } from "@/lib/consts";
-import { capitalize, formatQueryParams, trimStrings } from "@/lib/utils";
+import { apiUrlClient } from "@/lib/consts";
+import { capitalize, trimStrings } from "@/lib/utils";
 import { openSeferAtom } from "@/store/atoms";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import SeferCard from "./SeferCard";
 import SfarimDetail from "./SfarimDetail";
 import { revalidate } from "./actions";
-import { SfarimQuery } from "@/lib/types";
 
 export default function Sfarim({
   initialSfarim,
@@ -44,6 +43,8 @@ export default function Sfarim({
   const isAdmin = user?.isAdmin;
 
   const params = useSearchParams();
+
+  const router = useRouter();
 
   const [openSefer, setOpenSefer] = useAtom(openSeferAtom);
 
@@ -169,8 +170,14 @@ export default function Sfarim({
               </div>
             ) : (
               <div className="flex flex-row-reverse gap-2">
-                <Button asChild className="grow">
-                  <Link href={`/sefer/${openSefer?.ID}/edit`}>Edit</Link>
+                <Button
+                  className="grow"
+                  onClick={() => {
+                    setOpenSefer(null);
+                    router.push(`/sefer/${openSefer?.ID}/edit`);
+                  }}
+                >
+                  Edit
                 </Button>
                 <Button
                   variant="destructive"

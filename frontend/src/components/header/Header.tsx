@@ -41,6 +41,10 @@ export default function Header() {
         gsap.set(".title", {
           x: !isHome ? 0 : 30,
         });
+      } else if (path === "/") {
+        gsap.set(".arrow", {
+          autoAlpha: 0,
+        });
       }
     }
   }, [path]);

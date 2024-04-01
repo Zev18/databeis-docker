@@ -24,7 +24,6 @@ const fetchUserData = async () => {
     headers: headers(), // pass headers from client to backend
   });
   const data = await res.json();
-  console.log(data);
   const user: User = {
     id: data.ID,
     name: data.displayName || data.name,
