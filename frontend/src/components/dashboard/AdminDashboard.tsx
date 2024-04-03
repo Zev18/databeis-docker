@@ -1,38 +1,19 @@
 "use client";
 
 import { capitalize } from "@/lib/utils";
-import { BarChart3, BookText, Group, Users } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import SfarimTab from "./SfarimTab";
 
-const iconSize = 22;
-
-const tabsList = [
-  {
-    name: "sfarim",
-    icon: <BookText size={iconSize} />,
-    component: <SfarimTab />,
-  },
-  {
-    name: "categories",
-    icon: <Group size={iconSize} />,
-    component: <SfarimTab />,
-  },
-  {
-    name: "users",
-    icon: <Users size={iconSize} />,
-    component: <SfarimTab />,
-  },
-  {
-    name: "stats",
-    icon: <BarChart3 size={iconSize} />,
-    component: <SfarimTab />,
-  },
-];
-
-export default function AdminDashboard() {
+export default function AdminDashboard({
+  tabsList,
+}: {
+  tabsList: {
+    name: string;
+    icon: React.ReactNode;
+    component: React.ReactNode;
+  }[];
+}) {
   const [tab, setTab] = useQueryState("tab");
 
   const isSelected = (tabName: string) => {
@@ -76,7 +57,7 @@ export default function AdminDashboard() {
             </Button>
           ))}
         </aside>
-        <div className="mb-[20vh] py-4">
+        <div className="mb-[20vh] w-full py-4">
           {tabsList.find((tabData) => tabData.name == tab)?.component ||
             tabsList[0].component}
         </div>

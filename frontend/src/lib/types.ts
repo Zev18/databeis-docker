@@ -21,3 +21,9 @@ export type SfarimQuery = {
   page?: number;
   perPage?: number;
 };
+
+export type Category = {
+  id: number;
+  name: string;
+  children?: Category[];
+};
