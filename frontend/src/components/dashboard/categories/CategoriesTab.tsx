@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -5,16 +7,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import React from "react";
-import CreateCategory from "./CreateCategory";
+import { apiUrlClient } from "@/lib/consts";
 import { Category } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
 import CategoriesList from "./CategoriesList";
+import CreateCategory from "./CreateCategory";
+import { useCategories } from "@/hooks/useCategories";
 
 export default function CategoriesTab({
-  categories,
+  categories: c,
 }: {
   categories: Category[];
 }) {
+  const { data: categories } = useCategories(c);
+
   return (
     <Card>
       <CardHeader>
@@ -22,8 +28,8 @@ export default function CategoriesTab({
         <CardDescription>Create and manage categories</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <CreateCategory categories={categories} />
-        <CategoriesList categories={categories} />
+        <CreateCategory />
+        <CategoriesList />
       </CardContent>
     </Card>
   );

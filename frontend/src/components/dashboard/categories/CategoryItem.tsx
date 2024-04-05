@@ -1,8 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Category } from "@/lib/types";
 import { capitalize, cn } from "@/lib/utils";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 
 const iconSize = 20;
@@ -18,7 +19,7 @@ export default function CategoryItem({
 
   return (
     <>
-      <div className="flex items-center gap-2 px-2 py-2 hover:bg-secondary">
+      <div className="flex w-full items-center gap-2 px-2 py-2 hover:bg-secondary">
         <button
           onClick={() => setChildrenOpen(!childrenOpen)}
           className={cn(
@@ -34,7 +35,14 @@ export default function CategoryItem({
           )}
         </button>
         <p>{capitalize(category.name)}</p>
-        <div className="self-justify-end"></div>
+        <div className="ml-auto mr-2 flex gap-2">
+          <Button variant="outline">
+            <Pencil size={iconSize} />
+          </Button>
+          <Button variant="outline">
+            <Trash2 size={iconSize} />
+          </Button>
+        </div>
       </div>
       {childrenOpen &&
         category.children?.map((child) => (

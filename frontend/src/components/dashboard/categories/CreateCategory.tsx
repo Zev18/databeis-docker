@@ -7,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -25,12 +24,16 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import { useCategories } from "@/hooks/useCategories";
+import { apiUrlClient } from "@/lib/consts";
 import { Category } from "@/lib/types";
-import { capitalize } from "@/lib/utils";
+import { capitalize, cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const iconSize = 18;
@@ -40,22 +43,64 @@ const formSchema = z.object({
   parentId: z.coerce.number().optional(),
 });
 
-export default function CreateCategory({
-  categories,
-}: {
-  categories: Category[];
-}) {
+export default function CreateCategory() {
+  const { data: categories, allCategories } = useCategories();
+
+  const queryClient = useQueryClient();
+
+  const [open, setOpen] = useState(false);
+
+  const { mutateAsync: createCategory } = useMutation({
+    mutationFn: (data: { name: string; type: string; parentId?: number }) => {
+      return fetch(apiUrlClient + "/api/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+    },
+    onError: (error) => {
+      console.log("Error: " + error.message);
+      toast.error("Error creating category", { description: error.message });
+    },
+    onSuccess: async (data) => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      if (!data.ok) {
+        const res = await data.json();
+        toast.error("Error creating category", {
+          description: capitalize(res.message),
+        });
+      } else {
+        toast.success("Category created");
+        setOpen(false);
+      }
+    },
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    const parentType = values.parentId
+      ? allCategories.find((c) => c.id === values.parentId)?.type
+      : "category";
+    const body = {
+      ...values,
+      type: parentType
+        ? parentType === "category"
+          ? "subcategory"
+          : "subsubcategory"
+        : "category",
+    };
+    createCategory(body);
   };
 
-  const allCategories = useMemo(() => {
+  const categoriesMap = useMemo(() => {
     const map = new Map();
-    categories.forEach((category) => {
+    categories?.forEach((category) => {
       map.set(category.id, category);
       if (category.children) {
         category.children.forEach((child) => {
@@ -68,34 +113,17 @@ export default function CreateCategory({
 
   const [parentCategory, setParentCategory] = useState<Category>();
 
-  const renderCategories = useCallback((category: Category) => {
-    const options = [
-      <SelectItem key={category.id} value={category.id.toString()}>
-        {capitalize(category.name)}
-      </SelectItem>,
-    ];
-    if (category.children) {
-      category.children.forEach((child) => {
-        options.push(
-          <div key={child.id} className="px-4">
-            <SelectItem value={child.id.toString()}>
-              {capitalize(child.name)}
-            </SelectItem>
-          </div>,
-        );
-      });
-    }
-    return options;
-  }, []);
-
   return (
-    <Dialog>
-      <DialogTrigger asChild className="max-w-fit">
-        <Button variant="outline" size="lg">
-          <Plus size={iconSize} className="mr-2" />
-          New Category
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button
+        variant="outline"
+        size="lg"
+        className="max-w-fit"
+        onClick={() => setOpen(true)}
+      >
+        <Plus size={iconSize} className="mr-2" />
+        New Category
+      </Button>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New Category</DialogTitle>
@@ -109,7 +137,7 @@ export default function CreateCategory({
                 <FormItem>
                   <FormLabel>Category Name</FormLabel>
                   <FormControl>
-                    <Input {...field} autoComplete="off" />
+                    <Input {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,8 +157,9 @@ export default function CreateCategory({
                     <Select
                       onValueChange={(id) => {
                         field.onChange(id);
-                        setParentCategory(allCategories.get(Number(id)));
+                        setParentCategory(categoriesMap.get(Number(id)));
                       }}
+                      defaultValue={field.value?.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -140,8 +169,20 @@ export default function CreateCategory({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.map((category) =>
-                          renderCategories(category),
+                        {allCategories?.map(
+                          (category) =>
+                            category.type !== "subsubcategory" && (
+                              <div
+                                key={category.id}
+                                className={cn(
+                                  category.type !== "category" && "px-4",
+                                )}
+                              >
+                                <SelectItem value={category.id.toString()}>
+                                  {capitalize(category.name)}
+                                </SelectItem>
+                              </div>
+                            ),
                         )}
                       </SelectContent>
                     </Select>
@@ -160,9 +201,14 @@ export default function CreateCategory({
                 </FormItem>
               )}
             />
+            <DialogFooter>
+              <Button variant="secondary" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Create</Button>
+            </DialogFooter>
           </form>
         </Form>
-        <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>
   );

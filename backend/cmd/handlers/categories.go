@@ -10,15 +10,18 @@ import (
 type Category struct {
 	Id       uint          `json:"id"`
 	Name     string        `json:"name"`
+	Type     string        `json:"type"`
 	Children []Subcategory `json:"children,omitempty"`
 }
 type Subcategory struct {
 	Id       uint             `json:"id"`
 	Name     string           `json:"name"`
+	Type     string           `json:"type"`
 	Children []Subsubcategory `json:"children,omitempty"`
 }
 type Subsubcategory struct {
 	Id   uint   `json:"id"`
+	Type string `json:"type"`
 	Name string `json:"name"`
 }
 
@@ -39,19 +42,21 @@ func ListCategories(c *fiber.Ctx) error {
 					grandchildren = append(grandchildren, Subsubcategory{
 						Id:   subsubcategory.ID,
 						Name: subsubcategory.Name,
+						Type: subsubcategory.Type,
 					})
 				}
 			}
 			subcategoryResult := Subcategory{
 				Id:       subcategory.ID,
 				Name:     subcategory.Name,
+				Type:     subcategory.Type,
 				Children: grandchildren,
 			}
 			if category.ID == *subcategory.ParentID {
 				children = append(children, subcategoryResult)
 			}
 		}
-		results = append(results, Category{Id: category.ID, Name: category.Name, Children: children})
+		results = append(results, Category{Id: category.ID, Name: category.Name, Type: category.Type, Children: children})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(results)

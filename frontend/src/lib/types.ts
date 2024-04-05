@@ -25,5 +25,6 @@ export type SfarimQuery = {
 export type Category = {
   id: number;
   name: string;
+  type: string;
   children?: Category[];
 };
