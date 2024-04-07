@@ -148,9 +148,35 @@ func PutCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	category.Name = newCategory.Name
-	category.Type = newCategory.Type
-	category.ParentID = newCategory.ParentID
+	if newCategory.ParentID == &newCategory.ID {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  "error",
+			"message": "category cannot have itself as parent",
+			"data":    nil,
+		})
+	}
+
+	// originalDepth := findDepth(&category)
+	newDepth := findDepth(newCategory)
+
+	switch newCategory.Type {
+	case "subcategory":
+		if newDepth > 1 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"status":  "error",
+				"message": "creating great-grandchildren not allowed",
+				"data":    nil,
+			})
+		}
+	case "subsubcategory":
+		if newDepth > 0 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"status":  "error",
+				"message": "creating great-grandchildren not allowed",
+				"data":    nil,
+			})
+		}
+	}
 
 	if category.ParentID != nil {
 		if category.Type == "category" {
@@ -178,7 +204,12 @@ func PutCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	database.DB.Db.Save(&category)
+	database.DB.Db.Model(&category).Updates(models.Category{Name: newCategory.Name, Type: newCategory.Type, ParentID: newCategory.ParentID})
+	if newCategory.Type == "category" {
+		database.DB.Db.Where("parent_id = ?", newCategory.ID).Update("type", "subcategory")
+	} else if newCategory.Type == "subcategory" {
+		database.DB.Db.Where("parent_id = ?", newCategory.ID).Update("type", "subsubcategory")
+	}
 
 	return c.Status(fiber.StatusOK).JSON(category)
 }
@@ -201,4 +232,16 @@ func DeleteCategory(c *fiber.Ctx) error {
 	database.DB.Db.Where("id = ?", c.Params("id")).First(&category)
 	database.DB.Db.Delete(&category)
 	return c.Status(fiber.StatusOK).JSON(category)
+}
+
+func findDepth(category *models.Category) int {
+	var children []models.Category
+	database.DB.Db.Where("parent_id = ?", &category.ID).Find(&children)
+
+	if len(children) > 0 {
+		for _, child := range children {
+			return 1 + findDepth(&child)
+		}
+	}
+	return 0
 }

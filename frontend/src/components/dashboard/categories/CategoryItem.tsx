@@ -1,10 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Category } from "@/lib/types";
 import { capitalize, cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
+import EditCategoryForm from "./EditCategoryForm";
 
 const iconSize = 20;
 
@@ -36,9 +45,23 @@ export default function CategoryItem({
         </button>
         <p>{capitalize(category.name)}</p>
         <div className="ml-auto mr-2 flex gap-2">
-          <Button variant="outline">
-            <Pencil size={iconSize} />
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Pencil size={iconSize} />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit category</DialogTitle>
+                <DialogDescription>
+                  Change the name or parent category. These changes will apply
+                  to all sfarim with this category.
+                </DialogDescription>
+                <EditCategoryForm category={category} />
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
           <Button variant="outline">
             <Trash2 size={iconSize} />
           </Button>

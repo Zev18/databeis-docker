@@ -31,7 +31,7 @@ import { capitalize, cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -85,7 +85,7 @@ export default function CreateCategory() {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const parentType = values.parentId
-      ? allCategories.find((c) => c.id === values.parentId)?.type
+      ? categoriesMap.get(values.parentId)?.type
       : "category";
     const body = {
       ...values,

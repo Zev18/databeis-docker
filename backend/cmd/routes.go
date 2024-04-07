@@ -41,7 +41,7 @@ func setupRoutes(app *fiber.App) {
 
 	app.Route("/categories", func(router fiber.Router) {
 		router.Get("", handlers.ListCategories)
-		router.Put("/:id", handlers.PutCategory)
+		router.Patch("/:id", handlers.PutCategory)
 		router.Post("", handlers.CreateCategory)
 		router.Delete("/:id", handlers.DeleteCategory)
 	})
@@ -49,7 +49,7 @@ func setupRoutes(app *fiber.App) {
 	app.Route("/affiliations", func(router fiber.Router) {
 		router.Get("", handlers.GetAllAffiliations)
 		router.Get("/:id", handlers.GetAffiliation)
-		router.Put("/:id", handlers.UpdateAffiliation)
+		router.Patch("/:id", handlers.UpdateAffiliation)
 		router.Post("", handlers.CreateAffiliation)
 		router.Delete("/:id", handlers.DeleteAffiliation)
 	})
