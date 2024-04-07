@@ -107,7 +107,8 @@ export const setUrlPage = (
 export const hiRes = (size: number, url: string | null | undefined) => {
   if (!url) return "";
   if (!url.includes("googleusercontent")) return url;
-  return url.replace(/=s96-c$/, `=s${size}`);
+  const newUrl = url.replace(/=s96-c/, `=s${size}`);
+  return newUrl;
 };
 
 export const formatUserData = (data: Record<string, any>) => {
