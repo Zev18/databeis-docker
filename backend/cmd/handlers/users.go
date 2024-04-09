@@ -27,6 +27,12 @@ func GetUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(user)
 }
 
+func GetAdmins(c *fiber.Ctx) error {
+	var users []models.User
+	database.DB.Db.Where("is_admin = ?", true).Find(&users)
+	return c.Status(fiber.StatusOK).JSON(users)
+}
+
 func UpdateUser(c *fiber.Ctx) error {
 	client, err := Authorize(c)
 	if err != nil {
@@ -60,8 +66,8 @@ func UpdateUser(c *fiber.Ctx) error {
 	log.Printf("%+v\n", payload)
 
 	database.DB.Db.Model(&user).Updates(&map[string]interface{}{
-		"DisplayName":     payload.DisplayName,
-		"GradYear":        payload.GradYear,
+		"DisplayName": payload.DisplayName,
+		"GradYear":    payload.GradYear,
 	})
 
 	if payload.Affiliation != nil {
@@ -122,4 +128,11 @@ func RemoveAdmin(c *fiber.Ctx) error {
 		"message": "success",
 		"data":    strconv.Itoa(len(users)) + " users updated",
 	})
+}
+
+func SearchUsers(c *fiber.Ctx) error {
+	query := c.Query("query")
+	var users []models.User
+	database.DB.Db.Where("display_name ILIKE ? OR name ILIKE ? OR email ILIKE ?", "%"+query+"%", "%"+query+"%", "%"+query+"%").Find(&users)
+	return c.Status(fiber.StatusOK).JSON(users)
 }

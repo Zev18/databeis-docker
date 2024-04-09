@@ -46,7 +46,7 @@ export default async function Home({
         <Searchbar />
         <Filters categories={categories.data} />
       </div>
-      <Sfarim initialSfarim={initialSfarim} />
+      <Sfarim initialSfarim={initialSfarim} q={q} />
     </div>
   );
 }

@@ -1,7 +1,9 @@
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
 import SfarimTab from "@/components/dashboard/SfarimTab";
 import CategoriesTab from "@/components/dashboard/categories/CategoriesTab";
+import UsersTab from "@/components/dashboard/users/UsersTab";
 import { apiUrlServer } from "@/lib/consts";
+import { User } from "@/lib/types";
 import { BookText, Group, Users, BarChart3 } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -17,6 +19,31 @@ const fetchCategories = async () => {
   return data;
 };
 
+const fetchAdmins = async () => {
+  const res = await fetch(apiUrlServer + "/api/users/admins", {
+    headers: headers(),
+  });
+  const data = await res.json();
+  const users = [];
+  for (const admin of data) {
+    const user: User = {
+      id: admin.ID,
+      name: admin.displayName || admin.name,
+      email: admin.email,
+      isAdmin: admin.isAdmin,
+      avatarUrl: admin.customAvatarUrl || admin.avatarUrl,
+    };
+    if (admin.affiliation) {
+      user.affiliation = data.affiliation.name;
+    }
+    if (admin.gradYear) {
+      user.gradYear = data.gradYear;
+    }
+    users.push(user);
+  }
+  return users;
+};
+
 export default async function Admin() {
   const res = await fetch(apiUrlServer + "/api/authenticate", {
     credentials: "include",
@@ -29,6 +56,8 @@ export default async function Admin() {
   }
 
   const categories = await fetchCategories();
+
+  const admins = await fetchAdmins();
 
   const tabsList = [
     {
@@ -44,7 +73,7 @@ export default async function Admin() {
     {
       name: "users",
       icon: <Users size={iconSize} />,
-      component: <SfarimTab />,
+      component: <UsersTab users={admins} />,
     },
     {
       name: "stats",

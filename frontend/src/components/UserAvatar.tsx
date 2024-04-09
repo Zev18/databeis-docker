@@ -2,6 +2,7 @@ import { User } from "@/lib/types";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 type Size = "xs" | "sm" | "md" | "lg";
 
@@ -42,7 +43,7 @@ export default function UserAvatar({
         />
       )}
       <AvatarFallback className="not-italic">
-        {user?.name[0].toUpperCase()}
+        {user?.name && user.name[0].toUpperCase()}
       </AvatarFallback>
     </Avatar>
   );

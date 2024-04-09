@@ -313,6 +313,9 @@ func BookmarkSefer(c *fiber.Ctx) error {
 	}
 
 	seferId := c.Params("id")
+	if seferId == "" {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "No sefer with that Id exists"})
+	}
 	var msg string
 
 	notBookmarked := database.DB.Db.Model(&user).Where("id = ?", seferId).Association("Sfarim").Count() == 0
@@ -328,7 +331,7 @@ func BookmarkSefer(c *fiber.Ctx) error {
 		msg = "Removed sefer of id " + seferId + " from bookmarks"
 	}
 
-	return c.Status(fiber.StatusOK).SendString(msg)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": msg})
 }
 
 func StrToBool(str string) bool {

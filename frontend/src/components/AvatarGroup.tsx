@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import UserAvatar from "./UserAvatar";
 import { User } from "@/lib/types";
 import { cn } from "@/lib/utils";

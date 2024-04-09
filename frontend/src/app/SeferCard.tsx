@@ -4,9 +4,10 @@ import Unverified from "@/components/Unverified";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { apiUrlClient } from "@/lib/consts";
-import { capitalize, isBookmarked } from "@/lib/utils";
+import { capitalize } from "@/lib/utils";
 import { openSeferAtom } from "@/store/atoms";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import {
   Blend,
@@ -17,7 +18,6 @@ import {
   LibraryBig,
   User,
 } from "lucide-react";
-import { useState } from "react";
 import { revalidate } from "./actions";
 
 const iconSize = 18;
@@ -26,27 +26,37 @@ export default function SeferCard({ sefer }: { sefer: Record<string, any> }) {
   const { user, isLoggedIn } = useAuthStore.getState();
   const [, setOpenSefer] = useAtom(openSeferAtom);
 
-  const [bookmarked, setBookmarked] = useState(
-    isLoggedIn ? isBookmarked(sefer.users, user?.id) : false,
-  );
+  const isBookmarked = () => {
+    return user
+      ? sefer.users.some((u: Record<string, any>) => u.ID === user.id)
+      : false;
+  };
 
   const otherUsers = getOtherUsers(sefer.users, user?.id);
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(apiUrlClient + "/api/sfarim/bookmark/" + id, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      return await res.json();
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    onSettled: async () => {
+      revalidate();
+      return await queryClient.invalidateQueries({ queryKey: ["sfarim"] });
+    },
+  });
+
   const toggleBookmark = () => {
     if (!isLoggedIn) return;
-    const prevStatus = bookmarked;
-    setBookmarked((prev) => !prev);
-    if (!prevStatus) {
-      sefer.users.push(Number(user?.id));
-    } else {
-      sefer.users = sefer.users.filter((id: number) => id != user?.id);
-    }
-    fetch(apiUrlClient + "/api/sfarim/bookmark/" + sefer.ID, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-    revalidate();
+    mutation.mutate(sefer.ID);
   };
 
   return (
@@ -139,10 +149,10 @@ export default function SeferCard({ sefer }: { sefer: Record<string, any> }) {
             <Button variant="ghost" size="sm" onClick={toggleBookmark}>
               <Bookmark
                 size={iconSize - 2}
-                fill={bookmarked ? "currentColor" : "none"}
+                fill={isBookmarked() ? "currentColor" : "none"}
                 className="mr-2"
               />
-              <p>{bookmarked ? "Unbookmark" : "Bookmark"}</p>
+              <p>{isBookmarked() ? "Unbookmark" : "Bookmark"}</p>
             </Button>
           </div>
         </div>

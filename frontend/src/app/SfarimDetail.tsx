@@ -12,6 +12,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useEffect } from "react";
 
 const iconSize = 16;
 
@@ -20,6 +21,10 @@ export default function SfarimDetail({
 }: {
   sefer: Record<string, any> | null;
 }) {
+  useEffect(() => {
+    console.log(sefer);
+  }, [sefer]);
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2 text-sm">

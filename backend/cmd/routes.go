@@ -33,8 +33,10 @@ func setupRoutes(app *fiber.App) {
 	})
 
 	app.Route("/users", func(router fiber.Router) {
-		router.Get("/make-admin", handlers.MakeAdmin)
-		router.Get("/remove-admin", handlers.RemoveAdmin)
+		router.Post("/make-admin", handlers.MakeAdmin)
+		router.Post("/remove-admin", handlers.RemoveAdmin)
+		router.Get("/search", handlers.SearchUsers)
+		router.Get("/admins", handlers.GetAdmins)
 		router.Get("/:id", handlers.GetUser)
 		router.Patch("/:id", handlers.UpdateUser)
 	})
