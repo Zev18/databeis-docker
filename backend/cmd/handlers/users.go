@@ -120,6 +120,14 @@ func RemoveAdmin(c *fiber.Ctx) error {
 			"message": "unauthorized",
 		})
 	}
+
+	var count int64
+
+	database.DB.Db.Model(&models.User{}).Where("is_admin = ?", true).Count(&count)
+	if count < 2 {
+		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{"status": "fail", "message": "Cannot remove last admin"})
+	}
+
 	ids := strings.Split(c.Query("ids"), delimiter)
 
 	var users []models.User

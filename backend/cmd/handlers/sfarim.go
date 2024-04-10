@@ -337,3 +337,91 @@ func BookmarkSefer(c *fiber.Ctx) error {
 func StrToBool(str string) bool {
 	return strings.ToLower(str) == "true"
 }
+
+type CategoryStats struct {
+	Name         string `json:"name"`
+	Count        int64  `json:"count"`
+	Type         string `json:"type"`
+	EnglishCount int64  `json:"englishCount"`
+	HebrewCount  int64  `json:"hebrewCount"`
+	AramaicCount int64  `json:"aramaicCount"`
+}
+
+func GetSfarimStats(c *fiber.Ctx) error {
+	var categories []models.Category
+	database.DB.Db.Preload("Sefer").Find(&categories)
+
+	var categoryStatsMap = make(map[uint]CategoryStats)
+
+	for _, category := range categories {
+		id := category.ID
+		var count, englishCount, hebrewCount, aramaicCount int64
+		var sfarim []models.Sefer
+
+		switch category.Type {
+		case "category":
+			database.DB.Db.Where("category_id = ?", id).Find(&sfarim)
+		case "subcategory":
+			database.DB.Db.Where("subcategory_id = ?", id).Find(&sfarim)
+		case "subsubcategory":
+			database.DB.Db.Where("subsubcategory_id = ?", id).Find(&sfarim)
+		}
+
+		for _, sefer := range sfarim {
+			languages := strings.ToLower(*sefer.Languages)
+			if strings.Contains(languages, "english") {
+				englishCount++
+			}
+			if strings.Contains(languages, "hebrew") {
+				hebrewCount++
+			}
+			if strings.Contains(languages, "aramaic") {
+				aramaicCount++
+			}
+		}
+
+		count = int64(len(sfarim))
+		categoryStatsMap[id] = CategoryStats{
+			Name:         category.Name,
+			Count:        count,
+			Type:         category.Type,
+			EnglishCount: englishCount,
+			HebrewCount:  hebrewCount,
+			AramaicCount: aramaicCount,
+		}
+	}
+
+	var sfarimCount, savedCount, userCount int64
+	database.DB.Db.Model(models.Sefer{}).Count(&sfarimCount)
+	database.DB.Db.Raw("SELECT COUNT(*) FROM user_sfarim").Scan(&savedCount)
+	database.DB.Db.Model(models.User{}).Count(&userCount)
+
+	var users []models.User
+
+	database.DB.Db.Preload("Affiliation").Find(&users)
+
+	userYearsMap := make(map[int]int)
+	affiliationsMap := make(map[string]int)
+
+	for _, user := range users {
+		if user.Affiliation != nil {
+			affiliationsMap[user.Affiliation.Name]++
+		} else {
+			affiliationsMap["none"]++
+		}
+		if user.GradYear != nil {
+			userYearsMap[*user.GradYear]++
+		} else {
+			userYearsMap[0]++
+		}
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"categoryStats": categoryStatsMap,
+		"totalSfarim":   sfarimCount,
+		"totalSaved":    savedCount,
+		"totalUsers":    userCount,
+		"userYears":     userYearsMap,
+		"affiliations":  affiliationsMap,
+	})
+}

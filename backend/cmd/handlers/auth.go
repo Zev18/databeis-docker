@@ -116,6 +116,7 @@ func Callback(c *fiber.Ctx) error {
 		Value:    jwtToken,
 		Expires:  time.Now().Add(time.Hour * 24 * 14),
 		HTTPOnly: true,
+		Secure:   true,
 	}
 	c.Cookie(&cookie)
 
@@ -138,6 +139,7 @@ func Logout(c *fiber.Ctx) error {
 		Path:     "/",
 		Expires:  time.Now().Add(-time.Hour),
 		HTTPOnly: true,
+		Secure:   true,
 	}
 
 	c.Cookie(&cookie)

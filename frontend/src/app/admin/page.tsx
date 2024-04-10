@@ -1,6 +1,7 @@
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
 import SfarimTab from "@/components/dashboard/SfarimTab";
 import CategoriesTab from "@/components/dashboard/categories/CategoriesTab";
+import StatsTab from "@/components/dashboard/stats/StatsTab";
 import UsersTab from "@/components/dashboard/users/UsersTab";
 import { apiUrlServer } from "@/lib/consts";
 import { User } from "@/lib/types";
@@ -61,6 +62,11 @@ export default async function Admin() {
 
   const tabsList = [
     {
+      name: "stats",
+      icon: <BarChart3 size={iconSize} />,
+      component: <StatsTab />,
+    },
+    {
       name: "sfarim",
       icon: <BookText size={iconSize} />,
       component: <SfarimTab />,
@@ -74,11 +80,6 @@ export default async function Admin() {
       name: "users",
       icon: <Users size={iconSize} />,
       component: <UsersTab users={admins} />,
-    },
-    {
-      name: "stats",
-      icon: <BarChart3 size={iconSize} />,
-      component: <SfarimTab />,
     },
   ];
 

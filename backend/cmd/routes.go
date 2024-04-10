@@ -56,6 +56,8 @@ func setupRoutes(app *fiber.App) {
 		router.Delete("/:id", handlers.DeleteAffiliation)
 	})
 
+	app.Get("/stats", handlers.GetSfarimStats)
+
 	app.Get("/login", handlers.Login)
 	app.Get("/logout", handlers.Logout)
 	app.Get("/auth/callback", handlers.Callback)

@@ -23,9 +23,9 @@ type Sefer struct {
 	Library          *bool     `json:"library" gorm:"default:null"`
 	Confirmed        *bool     `json:"confirmed" gorm:"default:null"`
 	Quantity         *int      `json:"quantity" gorm:"default:null"`
-	CategoryID       *uint     `json:"categoryId" gorm:"default:null"`
-	SubcategoryID    *uint     `json:"subcategoryId" gorm:"default:null"`
-	SubsubcategoryID *uint     `json:"subsubcategoryId" gorm:"default:null"`
+	CategoryID       *uint     `json:"categoryId" gorm:"default:null;index"`
+	SubcategoryID    *uint     `json:"subcategoryId" gorm:"default:null;index"`
+	SubsubcategoryID *uint     `json:"subsubcategoryId" gorm:"default:null;index"`
 	Category         *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"category"`
 	Subcategory      *Category `gorm:"foreignKey:SubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"subcategory"`
 	Subsubcategory   *Category `gorm:"foreignKey:SubsubcategoryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"subsubcategory"`
