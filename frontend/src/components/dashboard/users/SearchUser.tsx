@@ -55,7 +55,10 @@ export default function SearchUser() {
                     <button
                       key={user.id}
                       className="flex w-full items-center gap-2 rounded-lg border px-4 py-2 hover:bg-secondary"
-                      onClick={() => addAdmin.mutate(user.id)}
+                      onClick={() => {
+                        addAdmin.mutate(user.id);
+                        setQuery("");
+                      }}
                     >
                       <Plus className="opacity-60" />
                       <UserAvatar user={user} size="sm" />

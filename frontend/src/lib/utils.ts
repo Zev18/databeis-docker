@@ -151,3 +151,34 @@ export const languagesToSet = (s: string): Set<string> => {
   }
   return set;
 };
+
+/**
+ * Generates a random color in hexadecimal format using the HSL color model.
+ *
+ * @return {string} The randomly generated color in hexadecimal format.
+ */
+export const randomColor = (): string => {
+  "use strict";
+
+  const randomInt = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const hslToHex = (h: number, s: number, l: number) => {
+    l /= 100;
+    const a = (s * Math.min(l, 1 - l)) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color)
+        .toString(16)
+        .padStart(2, "0"); // convert to Hex and prefix "0" if needed
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+
+  var h = randomInt(0, 360);
+  var s = randomInt(42, 70);
+  var l = randomInt(50, 85);
+  return hslToHex(h, s, l);
+};

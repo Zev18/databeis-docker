@@ -40,6 +40,7 @@ export default function UserAvatar({
           src={user?.avatarUrl || ""}
           referrerPolicy="no-referrer"
           fill
+          sizes="20vw"
         />
       )}
       <AvatarFallback className="not-italic">

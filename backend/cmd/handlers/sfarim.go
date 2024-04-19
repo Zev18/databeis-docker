@@ -402,8 +402,12 @@ func GetSfarimStats(c *fiber.Ctx) error {
 
 	userYearsMap := make(map[int]int)
 	affiliationsMap := make(map[string]int)
+	var totalAdmins int
 
 	for _, user := range users {
+		if user.IsAdmin {
+			totalAdmins++
+		}
 		if user.Affiliation != nil {
 			affiliationsMap[user.Affiliation.Name]++
 		} else {
@@ -421,6 +425,7 @@ func GetSfarimStats(c *fiber.Ctx) error {
 		"totalSfarim":   sfarimCount,
 		"totalSaved":    savedCount,
 		"totalUsers":    userCount,
+		"totalAdmins":   totalAdmins,
 		"userYears":     userYearsMap,
 		"affiliations":  affiliationsMap,
 	})
