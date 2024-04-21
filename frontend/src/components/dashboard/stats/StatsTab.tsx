@@ -67,8 +67,17 @@ export default async function StatsTab() {
             {String(stats.totalSaved).padStart(4, "0")}
           </SmallStat>
         </div>
-        <div className="grid">
-          <PieChartCard data={data.categoryData} total={stats.totalSfarim} />
+        <div className="grid gap-2 lg:grid-cols-2">
+          <PieChartCard
+            title="Categories"
+            data={data.categoryData}
+            total={stats.totalSfarim}
+          />
+          <PieChartCard
+            title="Users"
+            data={data.affiliationData}
+            total={stats.totalSfarim}
+          />
         </div>
       </CardContent>
     </Card>
@@ -77,6 +86,8 @@ export default async function StatsTab() {
 
 const generateData = (categories: Category[], stats: Record<string, any>) => {
   const categoryData: BaseDataEntry[] = [];
+  const affiliationData: BaseDataEntry[] = [];
+  console.log(stats.affiliations);
 
   for (const category of categories) {
     const entry: BaseDataEntry = {
@@ -86,6 +97,14 @@ const generateData = (categories: Category[], stats: Record<string, any>) => {
     };
     categoryData.push(entry);
   }
+  for (const affiliation in stats.affiliations) {
+    const entry: BaseDataEntry = {
+      title: capitalize(affiliation),
+      value: stats.affiliations[affiliation],
+      color: randomColor(),
+    };
+    affiliationData.push(entry);
+  }
 
-  return { categoryData };
+  return { categoryData, affiliationData };
 };
