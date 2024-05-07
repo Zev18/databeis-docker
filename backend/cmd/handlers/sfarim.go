@@ -430,3 +430,30 @@ func GetSfarimStats(c *fiber.Ctx) error {
 		"affiliations":  affiliationsMap,
 	})
 }
+
+func GetSavedSfarim(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var user models.User
+
+	log.Println("test")
+
+	database.DB.Db.Preload("Sfarim.Users").Preload("Users").First(&user, id)
+
+	return c.Status(fiber.StatusOK).JSON(user.Sfarim)
+}
+
+func GetMySfarim(c *fiber.Ctx) error {
+	user, err := Authorize(c)
+	if err != nil {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+
+	log.Println("test")
+
+	database.DB.Db.Preload("Sfarim.Users").First(&user)
+
+	return c.Status(fiber.StatusOK).JSON(user.Sfarim)
+}

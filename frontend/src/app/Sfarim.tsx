@@ -144,7 +144,10 @@ export default function Sfarim({
         <div className="flex w-full max-w-2xl flex-col gap-4">
           {sfarim.length > 0 && (
             <div>
-              <p>{pagination.totalRows} results found.</p>
+              <p>
+                {pagination.totalRows}{" "}
+                {pagination.totalRows === 1 ? "result" : "results"} found.
+              </p>
             </div>
           )}
           {sfarim.map((sefer: Record<string, any>) => (

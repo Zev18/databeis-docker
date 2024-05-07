@@ -6,17 +6,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 
 export const useSfarim = ({
-  initial,
   q = {},
+  bookmarks = false,
 }: {
-  initial?: Record<string, any>;
   q?: SfarimQuery;
+  bookmarks?: boolean;
 }) => {
-  const [query, setQuery] = useQueryState("query");
-  const [categories, setCategories] = useQueryState("categories");
-  const [languages, setLanguages] = useQueryState("language");
-  const [page, setPage] = useQueryState("page");
-  const [perPage, setPerPage] = useQueryState("perPage");
+  const [query] = useQueryState("query");
+  const [categories] = useQueryState("categories");
+  const [languages] = useQueryState("language");
+  const [page] = useQueryState("page");
+  const [perPage] = useQueryState("perPage");
 
   const getState = useCallback(() => {
     const state: SfarimQuery = {};
@@ -41,10 +41,18 @@ export const useSfarim = ({
     staleTime: 1000 * 60 * 10,
   });
 
+  const savedQuery = useQuery<Record<string, any>, Error>({
+    queryKey: ["saved"],
+    queryFn: async () => trimStrings(await fetchSaved()),
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const results = bookmarks ? savedQuery : sQuery;
+
   return {
-    ...sQuery,
-    sfarim: sQuery.data?.data,
-    pagination: sQuery.data?.pagination,
+    ...results,
+    sfarim: results.data?.data,
+    pagination: results.data?.pagination,
   };
 };
 
@@ -62,4 +70,13 @@ const fetchSfarim = async (q: SfarimQuery) => {
   });
   const data = await res.json();
   return { data: data.data, pagination: data.pagination };
+};
+
+const fetchSaved = async () => {
+  const res = await fetch(apiUrlClient + "/api/sfarim/saved", {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  const data = await res.json();
+  return data;
 };
