@@ -23,7 +23,9 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <Provider>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {process.env.NODE_ENV == "development" && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
         </ThemeProvider>

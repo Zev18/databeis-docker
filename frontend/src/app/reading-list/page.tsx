@@ -3,8 +3,19 @@ import { headers } from "next/headers";
 import React from "react";
 import SavedSfarim from "./SavedSfarim";
 import { trimStrings } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 const fetchInitialSfarim = async () => {
+  const userRes = await fetch(apiUrlServer + "/api/authenticate", {
+    credentials: "include",
+    headers: headers(),
+  });
+  const user = await userRes.json();
+
+  if (!user.isAdmin) {
+    redirect("/login");
+  }
+
   const res = await fetch(apiUrlServer + "/api/sfarim/saved/", {
     headers: headers(),
     credentials: "include",
