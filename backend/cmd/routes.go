@@ -45,7 +45,7 @@ func setupRoutes(app *fiber.App) {
 		router.Patch("/toggle-hidden", handlers.ToggleHidden)
 		router.Get("/:id", handlers.GetUser)
 		router.Patch("/:id", handlers.UpdateUser)
-		router.Delete("/:id", handlers.DeleteUser)
+		router.Delete("/delete-account", handlers.DeleteUser)
 	})
 
 	app.Route("/categories", func(router fiber.Router) {

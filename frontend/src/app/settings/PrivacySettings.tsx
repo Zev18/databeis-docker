@@ -6,7 +6,7 @@ import { apiUrlClient } from "@/lib/consts";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
 
-export default function PrivacySettings() {
+export default function PrivacySettings({ initial }: { initial: boolean }) {
   const { user } = useAuthStore();
 
   return (
@@ -23,9 +23,9 @@ export default function PrivacySettings() {
             </p>
           </div>
           <div>
-            {user && (
+            {
               <Switch
-                checked={!user?.isHidden}
+                checked={user ? !user.isHidden : initial}
                 onCheckedChange={() => {
                   const hidden = !user?.isHidden;
                   useAuthStore.setState({
@@ -41,7 +41,7 @@ export default function PrivacySettings() {
                   });
                 }}
               />
-            )}
+            }
           </div>
         </div>
       </CardContent>

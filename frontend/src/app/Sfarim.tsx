@@ -134,20 +134,25 @@ export default function Sfarim({
     [refetchSfarim],
   );
 
-  return isMounted && isPending ? (
-    <div>
-      <Loader2 className="animate-spin" />
-    </div>
-  ) : sfarim.length > 0 ? (
+  useEffect(() => {
+    console.log(isMounted);
+  }, [isMounted]);
+
+  useEffect(() => {
+    console.log(isPending);
+  }, [isPending]);
+
+  return sfarim.length > 0 ? (
     <>
       <div className="flex w-full justify-center">
         <div className="flex w-full max-w-2xl flex-col gap-4">
           {sfarim.length > 0 && (
-            <div>
+            <div className="flex items-center gap-2">
               <p>
                 {pagination.totalRows}{" "}
                 {pagination.totalRows === 1 ? "result" : "results"} found.
               </p>
+              {isPending && <Loader2 className="animate-spin" size={18} />}
             </div>
           )}
           {sfarim.map((sefer: Record<string, any>) => (

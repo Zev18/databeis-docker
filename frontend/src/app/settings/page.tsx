@@ -39,7 +39,7 @@ export default async function Settings() {
           </CardContent>
         </Card>
         <ThemeSettings />
-        <PrivacySettings />
+        <PrivacySettings initial={!user.isHidden} />
         <DeleteAccount />
       </div>
     </div>

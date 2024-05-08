@@ -168,26 +168,20 @@ func SearchUsers(c *fiber.Ctx) error {
 }
 
 func DeleteUser(c *fiber.Ctx) error {
-	id, idErr := strconv.ParseUint(c.Params("id"), 10, 64)
 	client, err := Authorize(c)
-	if err != nil || idErr != nil {
+	if err != nil {
 		c.Status(fiber.StatusUnauthorized)
 		return c.JSON(fiber.Map{
 			"message": "unauthenticated",
 		})
 	}
-	if uint64(client.ID) != id {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"message": "unauthorized",
-		})
-	}
+	id := client.ID
 
 	database.DB.Db.Unscoped().Model(&client).Association("Sfarim").Clear()
 	database.DB.Db.Unscoped().Model(&client).Association("Affiliation").Clear()
 	database.DB.Db.Unscoped().Delete(&models.User{}, id)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "user " + strconv.FormatUint(id, 10) + " deleted",
+		"message": "user " + strconv.FormatUint(uint64(id), 10) + " deleted",
 	})
 }
