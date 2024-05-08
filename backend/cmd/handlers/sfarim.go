@@ -64,7 +64,7 @@ func ListSfarim(c *fiber.Ctx) error {
 
 	paginationData := pagination.Paginate(page, perPage, &models.Sefer{}, queryStr, languagesQuery, categoryIds, queryCategories)
 	sfarim := []models.Sefer{}
-	command := database.DB.Db.Preload("Category").Preload("Subcategory").Preload("Subsubcategory").Preload("Users")
+	command := database.DB.Db.Preload("Category").Preload("Subcategory").Preload("Subsubcategory").Preload("Users", "is_hidden = ?", false)
 	if len(categoryIds) > 0 {
 		command = command.Where("category_id IN (?) OR subcategory_id IN (?) OR subsubcategory_id IN (?)", categoryIds, categoryIds, categoryIds)
 	}
@@ -113,7 +113,7 @@ func GetSefer(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var sefer models.Sefer
 
-	result := database.DB.Db.Preload("Users").First(&sefer, id)
+	result := database.DB.Db.Preload("Users", "is_hidden = ?", false).First(&sefer, id)
 	if err := result.Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "No sefer with that Id exists"})

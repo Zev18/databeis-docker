@@ -29,7 +29,7 @@ export default async function Profile() {
   return (
     <div className="flex w-full justify-center">
       <div className="flex w-full max-w-3xl flex-col items-center gap-4 p-4">
-        <h2 className="w-full text-2xl font-bold">My profile</h2>
+        <h2 className="w-full text-3xl font-bold">My profile</h2>
         <ProfileSection affiliations={affiliations} />
       </div>
     </div>

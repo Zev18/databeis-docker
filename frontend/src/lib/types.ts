@@ -6,6 +6,7 @@ export type User = {
   avatarUrl: string;
   affiliation?: string;
   gradYear?: number;
+  isHidden: boolean;
 };
 
 export type PageInfo = {

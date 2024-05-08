@@ -23,7 +23,7 @@ func setupRoutes(app *fiber.App) {
 	})
 
 	app.Route("/sfarim/saved/", func(router fiber.Router) {
-		router.Get(":id", handlers.GetSavedSfarim)
+		// router.Get(":id", handlers.GetSavedSfarim)
 		router.Get("", handlers.GetMySfarim)
 	})
 
@@ -42,8 +42,10 @@ func setupRoutes(app *fiber.App) {
 		router.Post("/remove-admin", handlers.RemoveAdmin)
 		router.Get("/search", handlers.SearchUsers)
 		router.Get("/admins", handlers.GetAdmins)
+		router.Patch("/toggle-hidden", handlers.ToggleHidden)
 		router.Get("/:id", handlers.GetUser)
 		router.Patch("/:id", handlers.UpdateUser)
+		router.Delete("/:id", handlers.DeleteUser)
 	})
 
 	app.Route("/categories", func(router fiber.Router) {

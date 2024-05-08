@@ -41,13 +41,13 @@ func UpdateUser(c *fiber.Ctx) error {
 			"message": "unauthenticated",
 		})
 	}
-	if !client.IsAdmin {
+	id := c.Params("id")
+	if idUint, err := strconv.ParseUint(id, 10, 64); uint64(client.ID) != idUint || err != nil {
 		c.Status(fiber.StatusUnauthorized)
 		return c.JSON(fiber.Map{
 			"message": "unauthorized",
 		})
 	}
-	id := c.Params("id")
 	var payload *models.User
 
 	if err := c.BodyParser(&payload); err != nil {
@@ -79,6 +79,28 @@ func UpdateUser(c *fiber.Ctx) error {
 	} else {
 		database.DB.Db.Model(&user).Association("Affiliation").Clear()
 	}
+
+	return c.Status(fiber.StatusOK).JSON(user)
+}
+
+func ToggleHidden(c *fiber.Ctx) error {
+	client, err := Authorize(c)
+	if err != nil {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+	var user models.User
+	result := database.DB.Db.First(&user, client.ID)
+	if err := result.Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "No user with that Id exists"})
+		}
+	}
+
+	database.DB.Db.Model(&user).Update("is_hidden", !user.IsHidden)
+
 	return c.Status(fiber.StatusOK).JSON(user)
 }
 
@@ -143,4 +165,29 @@ func SearchUsers(c *fiber.Ctx) error {
 	var users []models.User
 	database.DB.Db.Where("display_name ILIKE ? OR name ILIKE ? OR email ILIKE ?", "%"+query+"%", "%"+query+"%", "%"+query+"%").Find(&users)
 	return c.Status(fiber.StatusOK).JSON(users)
+}
+
+func DeleteUser(c *fiber.Ctx) error {
+	id, idErr := strconv.ParseUint(c.Params("id"), 10, 64)
+	client, err := Authorize(c)
+	if err != nil || idErr != nil {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+	if uint64(client.ID) != id {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthorized",
+		})
+	}
+
+	database.DB.Db.Unscoped().Model(&client).Association("Sfarim").Clear()
+	database.DB.Db.Unscoped().Model(&client).Association("Affiliation").Clear()
+	database.DB.Db.Unscoped().Delete(&models.User{}, id)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "user " + strconv.FormatUint(id, 10) + " deleted",
+	})
 }

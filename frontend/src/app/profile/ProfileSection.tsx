@@ -46,7 +46,6 @@ export default function ProfileSection({
 }) {
   const [editing, setEditing] = useState(false);
   const { user } = useAuthStore.getState();
-  useEffect(() => console.log(user), [user]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,7 +65,6 @@ export default function ProfileSection({
           : null,
       gradYear: values.gradYear || null,
     };
-    console.log(patchData);
     try {
       const res = await fetch(apiUrlClient + "/api/users/" + user?.id, {
         credentials: "include",

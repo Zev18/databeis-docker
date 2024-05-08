@@ -51,10 +51,12 @@ type User struct {
 	AvatarURL       string       `json:"avatarUrl" gorm:"text;default:null"`
 	CustomAvatarURL *string      `json:"customAvatarUrl" gorm:"text;default:null"`
 	IsAdmin         bool         `json:"isAdmin" gorm:"default:false"`
+	IsHidden        bool         `json:"isHidden" gorm:"default:false"`
 	GradYear        *int         `json:"gradYear" gorm:"default:null"`
 	AffiliationID   *uint        `json:"affiliationId" gorm:"default:null"`
 	Affiliation     *Affiliation `json:"affiliation" gorm:"default:null"`
 	Sfarim          []*Sefer     `json:"sfarim" gorm:"many2many:user_sfarim;"`
+	Theme           string       `json:"theme" gorm:"text;default:system"`
 }
 
 type Affiliation struct {

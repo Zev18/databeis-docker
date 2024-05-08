@@ -30,6 +30,7 @@ const fetchUserData = async () => {
     email: data.email,
     isAdmin: data.isAdmin,
     avatarUrl: data.customAvatarUrl || data.avatarUrl,
+    isHidden: data.isHidden,
   };
   if (data.affiliation) {
     user.affiliation = data.affiliation.name;
