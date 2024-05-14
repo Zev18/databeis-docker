@@ -34,9 +34,9 @@ type Sefer struct {
 
 type Category struct {
 	gorm.Model
-	Name     string    `json:"name" gorm:"primaryKey;text;default:null"`
-	Type     string    `json:"type" gorm:"primaryKey;text;default:null"`
-	ParentID *uint     `json:"parentId" gorm:"primaryKey;default:null"`
+	Name     string    `json:"name" gorm:"text;default:null"`
+	Type     string    `json:"type" gorm:"text;default:null"`
+	ParentID *uint     `json:"parentId" gorm:"default:null"`
 	Parent   *Category `gorm:"foreignKey:ParentID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;default:null" json:"parent"`
 }
 

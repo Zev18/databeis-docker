@@ -32,3 +32,7 @@ export default async function Edit({ params }: { params: { id: string } }) {
     notFound()
   );
 }
+
+export const metadata = {
+  title: "Edit sefer | Databeis",
+};

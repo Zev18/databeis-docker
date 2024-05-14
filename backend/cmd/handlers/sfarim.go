@@ -224,6 +224,7 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 
 	file, err := c.FormFile("file")
 	if err != nil {
+		log.Println("Error uploading file:", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error uploading file", "data": err})
 	}
 	if !strings.HasSuffix(strings.ToLower(file.Filename), ".csv") {
@@ -231,6 +232,7 @@ func GenerateFromCsv(c *fiber.Ctx) error {
 	}
 	f, err := file.Open()
 	if err != nil {
+		log.Println("Error uploading file:", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error opening file", "data": err})
 	}
 	reader := csv.NewReader(f)

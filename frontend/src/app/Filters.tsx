@@ -80,9 +80,10 @@ export default function Filters({
           </DialogHeader>
           <ScrollArea className="h-[60vh]">
             <div className="flex flex-col gap-4">
-              {categories.map((category) => (
-                <CategoryListing key={category.id} category={category} />
-              ))}
+              {categories &&
+                categories.map((category) => (
+                  <CategoryListing key={category.id} category={category} />
+                ))}
             </div>
           </ScrollArea>
           <DialogFooter className="w-full flex-row justify-stretch space-x-2">

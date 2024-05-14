@@ -17,9 +17,9 @@ func setupRoutes(app *fiber.App) {
 	)
 
 	app.Route("/sfarim", func(router fiber.Router) {
+		router.Post("/upload", handlers.GenerateFromCsv)
 		router.Get("", handlers.ListSfarim)
 		router.Post("/", handlers.CreateSefer)
-		app.Post("/upload", handlers.GenerateFromCsv)
 	})
 
 	app.Route("/sfarim/saved/", func(router fiber.Router) {
