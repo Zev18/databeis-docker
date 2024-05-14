@@ -35,3 +35,7 @@ export default async function Profile() {
     </div>
   );
 }
+
+export const metadata = {
+  title: "Profile | Databeis",
+};

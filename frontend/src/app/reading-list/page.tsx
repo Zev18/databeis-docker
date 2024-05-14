@@ -32,3 +32,7 @@ export default async function ReadingList() {
     </div>
   );
 }
+
+export const metadata = {
+  title: "Reading List | Databeis",
+};

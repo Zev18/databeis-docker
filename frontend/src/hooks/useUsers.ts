@@ -17,6 +17,7 @@ export function useUsers(query: string) {
       for (const u of userData) {
         const user: User = {
           id: u.ID,
+          isHidden: u.isHidden,
           name: u.name,
           email: u.email,
           isAdmin: u.isAdmin,

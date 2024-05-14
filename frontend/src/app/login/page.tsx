@@ -16,3 +16,7 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export const metadata = {
+  title: "Login | Databeis",
+};

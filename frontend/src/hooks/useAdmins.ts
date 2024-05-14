@@ -12,6 +12,7 @@ export function useAdmins(initial?: User[]) {
       for (const admin of adminsData) {
         const user: User = {
           id: admin.ID,
+          isHidden: admin.isHidden,
           name: admin.name,
           email: admin.email,
           isAdmin: admin.isAdmin,

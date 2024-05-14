@@ -32,6 +32,7 @@ const fetchAdmins = async () => {
       name: admin.displayName || admin.name,
       email: admin.email,
       isAdmin: admin.isAdmin,
+      isHidden: admin.isHidden,
       avatarUrl: admin.customAvatarUrl || admin.avatarUrl,
     };
     if (admin.affiliation) {
@@ -94,3 +95,7 @@ export default async function Admin() {
     </div>
   );
 }
+
+export const metadata = {
+  title: "Admin Dashboard | Databeis",
+};

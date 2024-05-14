@@ -45,3 +45,7 @@ export default async function Settings() {
     </div>
   );
 }
+
+export const metadata = {
+  title: "Settings | Databeis",
+};

@@ -114,6 +114,7 @@ export const hiRes = (size: number, url: string | null | undefined) => {
 export const formatUserData = (data: Record<string, any>) => {
   const user: User = {
     id: data.ID,
+    isHidden: data.isHidden || false,
     name: data.displayName || data.name,
     email: data.email,
     isAdmin: data.isAdmin,

@@ -15,6 +15,7 @@ services:
 
   goapp:
     container_name: goapp
+    restart: unless-stopped
     image: goapp1.0.0
     build:
       context: ./backend
