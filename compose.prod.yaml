@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     ports:
-      - 3000:3000
+      - "3000:443"
     depends_on:
       - goapp
 
@@ -25,7 +25,7 @@ services:
       - 8000:8000
     volumes:
       - .:/app
-    command: go build ./cmd/main.go
+    command: go build -b 0.0.0.0 ./cmd/main.go
     depends_on:
       - db
 
