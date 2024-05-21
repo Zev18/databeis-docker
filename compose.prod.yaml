@@ -5,6 +5,7 @@ services:
     build:
       context: ./frontend
       target: runner
+      network: host
     restart: always
     env_file:
       - .env
