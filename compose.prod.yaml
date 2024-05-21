@@ -25,7 +25,7 @@ services:
       - 8000:8000
     volumes:
       - .:/app
-    command: go build ./cmd/main.go -b 0.0.0.0
+    command: go build -b 0.0.0.0 ./cmd/main.go
     depends_on:
       - db
 
