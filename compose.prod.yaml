@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     ports:
-      - "3000:443"
+      - "80:3000"
     depends_on:
       - goapp
 
@@ -20,13 +20,16 @@ services:
     image: goapp1.0.0
     build:
       context: ./backend
+      args:
+        ENV: prod
     env_file:
       - .env
+
     ports:
       - 8000:8000
     volumes:
       - .:/app
-    command: go build ./cmd/main.go
+    command: sh -c "go build -o ./databeis ./cmd && ./databeis"
     depends_on:
       - db
 

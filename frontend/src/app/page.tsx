@@ -38,7 +38,6 @@ export default async function Home({
   const initialSfarim = trimStrings(await fetchInitialSfarim(q));
 
   const categories = trimStrings(await fetchCategories());
-  console.log(categories.data);
 
   return (
     <div className="flex w-full flex-col items-center gap-4 p-4">

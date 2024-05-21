@@ -134,14 +134,6 @@ export default function Sfarim({
     [refetchSfarim],
   );
 
-  useEffect(() => {
-    console.log(isMounted);
-  }, [isMounted]);
-
-  useEffect(() => {
-    console.log(isPending);
-  }, [isPending]);
-
   return sfarim.length > 0 ? (
     <>
       <div className="flex w-full justify-center">

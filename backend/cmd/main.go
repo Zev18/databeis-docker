@@ -14,7 +14,7 @@ func main() {
 	database.ConnectDb()
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000",
+		AllowOrigins:     "http://localhost:3000, http://localhost:443, http://localhost",
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowMethods:     "GET,POST,PATCH,DELETE,PUT",
 		AllowCredentials: true,

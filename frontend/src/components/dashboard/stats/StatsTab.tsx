@@ -87,7 +87,6 @@ export default async function StatsTab() {
 const generateData = (categories: Category[], stats: Record<string, any>) => {
   const categoryData: BaseDataEntry[] = [];
   const affiliationData: BaseDataEntry[] = [];
-  console.log(stats.affiliations);
 
   for (const category of categories) {
     const entry: BaseDataEntry = {

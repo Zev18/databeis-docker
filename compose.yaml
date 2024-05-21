@@ -26,6 +26,8 @@ services:
     image: goapp1.0.0
     build:
       context: ./backend
+      args:
+        ENV: dev
     env_file:
       - .env
     ports:
