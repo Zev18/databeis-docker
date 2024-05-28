@@ -1,7 +1,7 @@
 services:
   nextapp:
     container_name: nextapp
-    image: nextapp1.0.0
+    image: zev18/databies.nextjs
     build:
       context: ./frontend
       target: runner
@@ -17,7 +17,7 @@ services:
   goapp:
     container_name: goapp
     restart: unless-stopped
-    image: goapp1.0.0
+    image: zev18/databeis.go
     build:
       context: ./backend
       args:

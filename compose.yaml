@@ -1,7 +1,7 @@
 services:
   nextapp:
     container_name: nextapp
-    image: nextapp1.0.0
+    image: zev18/databeis.nextjs
     build:
       context: ./frontend
       target: dev
@@ -23,7 +23,7 @@ services:
 
   goapp:
     container_name: goapp
-    image: goapp1.0.0
+    image: zev18/databeis.go
     build:
       context: ./backend
       args:
