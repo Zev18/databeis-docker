@@ -1,7 +1,7 @@
 services:
   nextapp:
     container_name: nextapp
-    image: zev18/databies.nextjs
+    image: zev18/databeis.nextjs
     build:
       context: ./frontend
       target: runner
