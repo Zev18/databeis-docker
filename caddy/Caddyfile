@@ -9,7 +9,7 @@
     }
 
     @databeiApi host api.databeis.zevross.dev
-    handle @databreisApi {
+    handle @databeisApi {
         reverse_proxy goapp:8000
     }
 }
