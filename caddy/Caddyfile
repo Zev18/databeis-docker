@@ -8,7 +8,7 @@
         reverse_proxy nextapp:3000
     }
 
-    @databeiApi host api.databeis.zevross.dev
+    @databeisApi host api.databeis.zevross.dev
     handle @databeisApi {
         reverse_proxy goapp:8000
     }
