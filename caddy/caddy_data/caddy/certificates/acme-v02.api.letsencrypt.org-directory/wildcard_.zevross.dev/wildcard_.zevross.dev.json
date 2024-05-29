@@ -1,0 +1,9 @@
+{
+	"sans": [
+		"*.zevross.dev"
+	],
+	"issuer_data": {
+		"url": "https://acme-v02.api.letsencrypt.org/acme/cert/0348ca063af81539469fc1896ad078a5645b",
+		"ca": "https://acme-v02.api.letsencrypt.org/directory"
+	}
+}

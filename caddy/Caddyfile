@@ -1,0 +1,10 @@
+*.zevross.dev {
+    tls {
+        dns cloudflare {env.DNS_PROVIDER_TOKEN}
+    }
+
+    @databeis host databeis.zevross.dev
+    handle @databeis {
+        reverse_proxy nextapp:3000
+    }
+}
