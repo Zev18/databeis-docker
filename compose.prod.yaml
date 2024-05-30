@@ -44,9 +44,6 @@ services:
         ENV: prod
     env_file:
       - .env
-
-    ports:
-      - 8000:8000
     volumes:
       - .:/app
     command: sh -c "go build -buildvcs=false -o ./databeis ./cmd && ./databeis"

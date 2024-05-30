@@ -16,6 +16,10 @@ func setupRoutes(app *fiber.App) {
 		google.New(os.Getenv("OAUTH_KEY"), os.Getenv("OAUTH_SECRET"), "http://localhost:8000/api/auth/callback/google"),
 	)
 
+	app.Get("/ping", func(c *fiber.Ctx) error {
+		return c.SendStatus(200)
+	})
+
 	app.Route("/sfarim", func(router fiber.Router) {
 		router.Post("/upload", handlers.GenerateFromCsv)
 		router.Get("", handlers.ListSfarim)

@@ -13,3 +13,11 @@
         reverse_proxy goapp:8000
     }
 }
+
+:3000 {
+    reverse_proxy nextapp:3000
+}
+
+:8000 {
+    reverse_proxy goapp:8000
+}
